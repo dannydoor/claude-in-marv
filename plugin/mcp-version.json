@@ -2,11 +2,11 @@
   "name": "foldseek-server-mcp",
   "version": "0.1.0",
   "source": {
-    "kind": "local-build"
+    "kind": "source-build"
   },
   "upstream": {
     "repository": "https://github.com/soedinglab/MMseqs2-App",
-    "tag": null,
+    "tag": "mcp-v0.1.0",
     "commit": "2fe0fc00cd1093bf8148624517066a9f93074e56"
   },
   "artifact": {
