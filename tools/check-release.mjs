@@ -13,7 +13,8 @@ export function releaseMetadataErrors({ repositoryRoot, tag, repository }) {
     const manifest = JSON.parse(fs.readFileSync(
         path.join(repositoryRoot, 'plugin', '.claude-plugin', 'plugin.json'), 'utf8'));
     if (!tag) return ['tag is required'];
-    if (tag !== `v${manifest.version}`) errors.push(`tag must equal v${manifest.version}`);
+    if (tag !== `v${manifest.version}`) errors.push(`tag must equal v${manifest.version}; \
+        received ${JSON.stringify(tag)}`);
 
     const changelog = fs.readFileSync(path.join(repositoryRoot, 'plugin', 'CHANGELOG.md'), 'utf8');
     const escapedVersion = manifest.version.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -40,7 +41,7 @@ export function releaseMetadataErrors({ repositoryRoot, tag, repository }) {
 if (process.argv[1] && path.resolve(process.argv[1]) === script) {
     const errors = releaseMetadataErrors({
         repositoryRoot: root,
-        tag: process.env.GITHUB_REF_NAME || process.argv[2],
+        tag: process.argv[2] || process.env.RELEASE_TAG || process.env.GITHUB_REF_NAME,
         repository: process.env.GITHUB_REPOSITORY,
     });
     if (errors.length) {

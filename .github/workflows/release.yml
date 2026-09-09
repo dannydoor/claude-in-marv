@@ -34,11 +34,11 @@ jobs:
 
       - name: Test and validate release inputs
         env:
-          GITHUB_REF_NAME: ${{ inputs.tag }}
+          RELEASE_TAG : ${{ inputs.tag }}
         run: |
           npm test
           npm run check
-          npm run check:release
+          npm run check:release -- "$RELEASE_TAG"
 
       - name: Build and verify release archive contents
         id: archive
