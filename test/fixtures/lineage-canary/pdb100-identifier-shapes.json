@@ -1,0 +1,74 @@
+{
+  "_source": "sampled verbatim from the captured canary row files; not authored",
+  "_note": "one entry per distinct identifier shape per database, with the first three examples of each",
+  "databases": {
+    "pdb100": {
+      "rows": 923,
+      "shapes": {
+        "-assembly<N>_<CH>": {
+          "rows": 844,
+          "examples": [
+            "1a04-assembly2_B",
+            "1a2o-assembly2_B",
+            "1a9x-assembly1_A"
+          ]
+        },
+        "-assembly<N>_<CH>-<N>": {
+          "rows": 75,
+          "examples": [
+            "1dcf-assembly1_A-2",
+            "1dz3-assembly1_A-2",
+            "1ep2-assembly1_A-2"
+          ]
+        },
+        "-assembly<N>_<N>": {
+          "rows": 4,
+          "examples": [
+            "6o9m-assembly1_4",
+            "6o9m-assembly1_6",
+            "7egb-assembly1_2"
+          ]
+        }
+      }
+    },
+    "afdb-swissprot": {
+      "rows": 999,
+      "shapes": {
+        "non-pdb": {
+          "rows": 999,
+          "examples": [
+            "AF-A0A0H2UQ68-F1-model_v6",
+            "AF-A0A0H2ZN37-F1-model_v6",
+            "AF-A0A0H2ZNF6-F1-model_v6"
+          ]
+        }
+      }
+    },
+    "pdb_folddisco": {
+      "rows": 1000,
+      "shapes": {
+        ".<CH>": {
+          "rows": 1000,
+          "examples": [
+            "1a0o.ent",
+            "1a0o.ent",
+            "1a0o.ent"
+          ]
+        }
+      }
+    },
+    "afdb-proteome_folddisco": {
+      "rows": 1000,
+      "shapes": {
+        "non-pdb": {
+          "rows": 1000,
+          "examples": [
+            "AF-A0A044QPU0-F1-model_v4.pdb",
+            "AF-A0A044QRS5-F1-model_v4.pdb",
+            "AF-A0A044R1B0-F1-model_v4.pdb"
+          ]
+        }
+      }
+    }
+  }
+}

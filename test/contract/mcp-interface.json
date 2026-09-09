@@ -1,0 +1,454 @@
+{
+  "export_result": {
+    "properties": {
+      "queryIdx": {
+        "type": "number"
+      },
+      "ticketId": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "ticketId"
+    ],
+    "type": "object"
+  },
+  "folddisco_search": {
+    "properties": {
+      "accession": {
+        "properties": {
+          "autoMotif": {
+            "type": "boolean"
+          },
+          "id": {
+            "type": "string"
+          },
+          "source": {
+            "enum": [
+              "AlphaFoldDB",
+              "BFVD",
+              "PDB"
+            ],
+            "type": "string"
+          }
+        },
+        "type": [
+          "object",
+          "string"
+        ]
+      },
+      "databases": {
+        "items": {
+          "type": "string"
+        },
+        "type": "array"
+      },
+      "email": {
+        "type": "string"
+      },
+      "motif": {
+        "type": "string"
+      },
+      "query": {
+        "type": "string"
+      },
+      "queryRef": {
+        "type": "string"
+      },
+      "validateOnly": {
+        "type": "boolean"
+      }
+    },
+    "required": [
+      "databases"
+    ],
+    "type": "object"
+  },
+  "foldmason_msa": {
+    "properties": {
+      "accessions": {
+        "items": {
+          "type": [
+            "object",
+            "string"
+          ]
+        },
+        "minItems": 1,
+        "type": "array"
+      },
+      "email": {
+        "type": "string"
+      },
+      "fileRefs": {
+        "items": {
+          "type": "string"
+        },
+        "minItems": 2,
+        "type": "array"
+      },
+      "files": {
+        "items": {
+          "properties": {
+            "content": {
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "content",
+            "name"
+          ],
+          "type": "object"
+        },
+        "minItems": 1,
+        "type": "array"
+      },
+      "validateOnly": {
+        "type": "boolean"
+      }
+    },
+    "type": "object"
+  },
+  "foldseek_search": {
+    "properties": {
+      "accession": {
+        "properties": {
+          "autoMotif": {
+            "type": "boolean"
+          },
+          "id": {
+            "type": "string"
+          },
+          "source": {
+            "enum": [
+              "AlphaFoldDB",
+              "BFVD",
+              "PDB"
+            ],
+            "type": "string"
+          }
+        },
+        "type": [
+          "object",
+          "string"
+        ]
+      },
+      "databases": {
+        "items": {
+          "type": "string"
+        },
+        "type": "array"
+      },
+      "email": {
+        "type": "string"
+      },
+      "iterativeSearch": {
+        "type": "boolean"
+      },
+      "mode": {
+        "enum": [
+          "3diaa",
+          "lolalign",
+          "tmalign"
+        ],
+        "type": "string"
+      },
+      "query": {
+        "type": "string"
+      },
+      "queryRef": {
+        "type": "string"
+      },
+      "taxFilter": {
+        "type": "string"
+      },
+      "validateOnly": {
+        "type": "boolean"
+      }
+    },
+    "required": [
+      "databases"
+    ],
+    "type": "object"
+  },
+  "get_result_summary": {
+    "properties": {
+      "queryIdx": {
+        "type": "number"
+      },
+      "ticketId": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "ticketId"
+    ],
+    "type": "object"
+  },
+  "get_shared_dir": {
+    "properties": {},
+    "type": "object"
+  },
+  "get_ticket_status": {
+    "properties": {
+      "ticketId": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "ticketId"
+    ],
+    "type": "object"
+  },
+  "list_databases": {
+    "properties": {
+      "tool": {
+        "enum": [
+          "folddisco",
+          "foldseek",
+          "multimer"
+        ],
+        "type": "string"
+      }
+    },
+    "type": "object"
+  },
+  "multimer_search": {
+    "properties": {
+      "accession": {
+        "properties": {
+          "autoMotif": {
+            "type": "boolean"
+          },
+          "id": {
+            "type": "string"
+          },
+          "source": {
+            "enum": [
+              "AlphaFoldDB",
+              "BFVD",
+              "PDB"
+            ],
+            "type": "string"
+          }
+        },
+        "type": [
+          "object",
+          "string"
+        ]
+      },
+      "databases": {
+        "items": {
+          "type": "string"
+        },
+        "type": "array"
+      },
+      "email": {
+        "type": "string"
+      },
+      "mode": {
+        "enum": [
+          "3diaa",
+          "lolalign",
+          "tmalign"
+        ],
+        "type": "string"
+      },
+      "query": {
+        "type": "string"
+      },
+      "queryRef": {
+        "type": "string"
+      },
+      "taxFilter": {
+        "type": "string"
+      },
+      "validateOnly": {
+        "type": "boolean"
+      }
+    },
+    "required": [
+      "databases"
+    ],
+    "type": "object"
+  },
+  "select_hits": {
+    "properties": {
+      "action": {
+        "enum": [
+          "add",
+          "clear",
+          "copy",
+          "delete",
+          "describe",
+          "list",
+          "remove",
+          "set"
+        ],
+        "type": "string"
+      },
+      "fromName": {
+        "type": "string"
+      },
+      "ids": {
+        "items": {
+          "type": "string"
+        },
+        "type": "array"
+      },
+      "maxEntries": {
+        "type": "number"
+      },
+      "name": {
+        "type": "string"
+      },
+      "queryIdx": {
+        "type": "number"
+      },
+      "ticketId": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "ticketId"
+    ],
+    "type": "object"
+  },
+  "select_msa_columns": {
+    "properties": {
+      "action": {
+        "enum": [
+          "add",
+          "clear",
+          "copy",
+          "delete",
+          "describe",
+          "list",
+          "remove",
+          "set"
+        ],
+        "type": "string"
+      },
+      "columns": {
+        "items": {
+          "type": "number"
+        },
+        "type": "array"
+      },
+      "entry": {
+        "type": "number"
+      },
+      "fromName": {
+        "type": "string"
+      },
+      "name": {
+        "type": "string"
+      },
+      "ranges": {
+        "items": {
+          "type": "string"
+        },
+        "type": "array"
+      },
+      "residues": {
+        "items": {
+          "properties": {
+            "aa": {
+              "type": [
+                "null",
+                "string"
+              ]
+            },
+            "column": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "column"
+          ],
+          "type": "object"
+        },
+        "type": "array"
+      },
+      "ticketId": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "ticketId"
+    ],
+    "type": "object"
+  },
+  "send_to": {
+    "properties": {
+      "databases": {
+        "items": {
+          "type": "string"
+        },
+        "type": "array"
+      },
+      "email": {
+        "type": "string"
+      },
+      "from": {
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "queryIdx": {
+            "type": "number"
+          },
+          "rowId": {
+            "type": "string"
+          },
+          "ticketId": {
+            "type": "string"
+          },
+          "type": {
+            "enum": [
+              "msaColumns",
+              "row",
+              "selection"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "type"
+        ],
+        "type": "object"
+      },
+      "includeQuery": {
+        "type": "boolean"
+      },
+      "iterativeSearch": {
+        "type": "boolean"
+      },
+      "mode": {
+        "type": "string"
+      },
+      "motif": {
+        "type": "string"
+      },
+      "taxFilter": {
+        "type": "string"
+      },
+      "tool": {
+        "enum": [
+          "folddisco",
+          "foldmason",
+          "foldseek",
+          "multimer"
+        ],
+        "type": "string"
+      }
+    },
+    "required": [
+      "from",
+      "tool"
+    ],
+    "type": "object"
+  }
+}

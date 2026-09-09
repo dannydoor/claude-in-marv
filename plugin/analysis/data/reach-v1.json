@@ -1,0 +1,16 @@
+{
+  "analysisVersion": 1,
+  "collectionMapVersion": "collections-1",
+  "collectionMap": {
+    "pdb100": "pdb",
+    "pdb_folddisco": "pdb",
+    "afdb50": "afdb-uniprot50",
+    "afdb50_folddisco": "afdb-uniprot50",
+    "afdb-proteome": "afdb-proteome",
+    "afdb-proteome_folddisco": "afdb-proteome",
+    "BFVD": "bfvd",
+    "BFVD_folddisco": "bfvd",
+    "mgnify_esm30": "esm30",
+    "esm30_folddisco": "esm30"
+  }
+}

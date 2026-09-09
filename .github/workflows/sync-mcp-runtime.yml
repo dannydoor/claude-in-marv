@@ -1,0 +1,137 @@
+name: Update bundled MCP runtime
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "MMseqs2-App MCP source tag in the form mcp-v<major>.<minor>.<patch>"
+        required: true
+        type: string
+
+concurrency:
+  group: update-mcp-runtime
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+env:
+  UPSTREAM_URL: https://github.com/soedinglab/MMseqs2-App.git
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Validate the requested source tag
+        id: source
+        env:
+          TAG: ${{ inputs.tag }}
+        run: |
+          [[ "$TAG" =~ ^mcp-v[0-9]+\.[0-9]+\.[0-9]+$ ]] || {
+            echo "tag must be mcp-v<major>.<minor>.<patch>" >&2
+            exit 1
+          }
+          version=${TAG#mcp-v}
+          current=$(node -e "try { process.stdout.write(require('./plugin/mcp-version.json').upstream.tag ?? '') } catch {}")
+          if [ "$current" = "$TAG" ]; then
+            echo "Current plugin already pins $TAG"
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Check out the tagged MMseqs2-App source
+        if: steps.source.outputs.skip != 'true'
+        id: upstream
+        env:
+          TAG: ${{ steps.source.outputs.tag }}
+          VERSION: ${{ steps.source.outputs.version }}
+        run: |
+          source_root="$RUNNER_TEMP/MMseqs2-App"
+          git clone --depth 1 --branch "$TAG" --single-branch "$UPSTREAM_URL" "$source_root"
+          commit=$(git -C "$source_root" rev-parse HEAD)
+          package_version=$(node -p "require('$source_root/mcp/server/package.json').version")
+          [ "$package_version" = "$VERSION" ] || {
+            echo "$TAG names version $VERSION but mcp/server/package.json names $package_version" >&2
+            exit 1
+          }
+          echo "root=$source_root" >> "$GITHUB_OUTPUT"
+          echo "commit=$commit" >> "$GITHUB_OUTPUT"
+
+      - name: Build the runtime from the tagged source
+        if: steps.source.outputs.skip != 'true'
+        id: artifact
+        env:
+          SOURCE_ROOT: ${{ steps.upstream.outputs.root }}
+          VERSION: ${{ steps.source.outputs.version }}
+        run: |
+          npm ci --prefix "$SOURCE_ROOT/mcp/core"
+          npm ci --prefix "$SOURCE_ROOT/mcp/server"
+          npm run build:plugin-runtime --prefix "$SOURCE_ROOT/mcp/server"
+          artifact="$SOURCE_ROOT/mcp/server/dist/foldseek-server-plugin-runtime-v${VERSION}.zip"
+          [ -f "$artifact" ] || { echo "runtime artifact was not built" >&2; exit 1; }
+          sha=$(sha256sum "$artifact" | cut -d ' ' -f 1)
+          echo "path=$artifact" >> "$GITHUB_OUTPUT"
+          echo "sha256=$sha" >> "$GITHUB_OUTPUT"
+
+      - name: Import runtime and synchronize distribution metadata
+        if: steps.source.outputs.skip != 'true'
+        run: |
+          npm run import:mcp -- \
+            --artifact "${{ steps.artifact.outputs.path }}" \
+            --sha256 "${{ steps.artifact.outputs.sha256 }}" \
+            --source-kind source-build \
+            --upstream-tag "${{ steps.source.outputs.tag }}" \
+            --upstream-commit "${{ steps.upstream.outputs.commit }}"
+          npm run sync:mcp-metadata -- --repository "$GITHUB_REPOSITORY"
+
+      - name: Open the review pull request
+        if: steps.source.outputs.skip != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.source.outputs.tag }}
+          VERSION: ${{ steps.source.outputs.version }}
+          COMMIT: ${{ steps.upstream.outputs.commit }}
+          SHA256: ${{ steps.artifact.outputs.sha256 }}
+          BASE: ${{ github.event.repository.default_branch }}
+        run: |
+          branch="automation/mcp-${VERSION}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          gh auth setup-git
+          if git ls-remote --exit-code --heads origin "$branch" >/dev/null; then
+            echo "$branch already exists; refusing to overwrite review changes" >&2
+            exit 1
+          fi
+          git checkout -b "$branch"
+          git add README.md mcpb/manifest.json \
+            plugin/.claude-plugin/plugin.json plugin/.mcp.json plugin/mcp-version.json plugin/vendor
+          git diff --cached --quiet && { echo "No runtime change to propose"; exit 0; }
+          git commit -m "Update bundled MCP server to ${VERSION}"
+          git push --set-upstream origin "$branch"
+          body=$(printf '%s\n\n%s\n%s\n%s\n' \
+            "Builds and pins the reviewed MMseqs2-App MCP source tag." \
+            "- Upstream tag: \`$TAG\`" \
+            "- Upstream commit: \`$COMMIT\`" \
+            "- Built artifact SHA-256: \`$SHA256\`")
+          gh pr create --base "$BASE" --head "$branch" \
+            --title "Update bundled MCP server to ${VERSION}" --body "$body"
+
+      - name: Verify the complete plugin update
+        if: steps.source.outputs.skip != 'true'
+        run: |
+          npm test
+          npm run check
+          npm run package:all

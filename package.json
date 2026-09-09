@@ -1,0 +1,26 @@
+{
+  "name": "foldseek-mcp-plugin",
+  "private": true,
+  "description": "Source, tests and packaging for the Foldseek Server Claude plugin.",
+  "license": "GPL-3.0-or-later",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "test": "node --test test/unit/*.test.mjs",
+    "check:boundary": "node tools/boundary.mjs plugin",
+    "check:marketplace": "node tools/check-marketplace.mjs",
+    "check:mcp": "node tools/check-mcp-runtime.mjs",
+    "check:mcp-interface": "node tools/check-mcp-interface.mjs",
+    "check:mcpb": "node tools/check-mcpb.mjs",
+    "check:public": "node tools/check-public-tree.mjs",
+    "check:package": "bash tools/package.sh --check-only",
+    "check": "npm run check:marketplace && npm run check:mcp && npm run check:mcp-interface && npm run check:mcpb && npm run check:public && npm run check:boundary && npm run check:package",
+    "check:release": "node tools/check-release.mjs",
+    "import:mcp": "node tools/import-mcp-runtime.mjs",
+    "sync:mcp-metadata": "node tools/sync-mcp-metadata.mjs",
+    "package": "bash tools/package.sh",
+    "package:mcpb": "node tools/package-mcpb.mjs",
+    "package:all": "npm run package && npm run package:mcpb"
+  }
+}

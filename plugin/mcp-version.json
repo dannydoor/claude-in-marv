@@ -1,0 +1,23 @@
+{
+  "name": "foldseek-server-mcp",
+  "version": "0.1.0",
+  "source": {
+    "kind": "local-build"
+  },
+  "upstream": {
+    "repository": "https://github.com/soedinglab/MMseqs2-App",
+    "tag": null,
+    "commit": "2fe0fc00cd1093bf8148624517066a9f93074e56"
+  },
+  "artifact": {
+    "name": "foldseek-server-plugin-runtime-v0.1.0.zip",
+    "sha256": "33f3d8d114a873d5974fa9a6d7b28064e5f45da44cd05240cddba93256096522"
+  },
+  "files": {
+    "LICENSE": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903",
+    "THIRD_PARTY_NOTICES.md": "4279d00d837c245a6d1abda7c09b8ae9a519f4d9eb7ce759fb897e049aa24352",
+    "dist/server.mjs": "738d27a03502be4b303616ac2406a9c0de0d6b1aee87451cfc58c4ffe72c2e56",
+    "package.json": "91a079e23c43d9cbcdaa887888acd8bb75328a8e23cbb710c279cf87d91cc81e",
+    "scripts/foldseek-server-mcp.js": "bb49537de70e4f09380213a4057595141c90012bc28d0fdfc3a911dcbe09fd27"
+  }
+}

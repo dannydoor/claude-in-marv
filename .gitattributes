@@ -1,0 +1,7 @@
+* text=auto eol=lf
+
+*.gz binary
+*.plugin binary
+*.zip binary
+
+plugin/vendor/foldseek-server/dist/server.mjs linguist-generated=true -whitespace

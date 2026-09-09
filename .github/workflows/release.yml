@@ -1,0 +1,100 @@
+name: Release plugin
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing plugin tag to validate, for example v<plugin-version>"
+        required: true
+        type: string
+      publish:
+        description: "Publish immutable GitHub release assets after validation"
+        required: true
+        default: false
+        type: boolean
+
+concurrency:
+  group: release-${{ inputs.tag }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Test and validate release inputs
+        env:
+          GITHUB_REF_NAME: ${{ inputs.tag }}
+        run: |
+          npm test
+          npm run check
+          npm run check:release
+
+      - name: Build and verify release archive contents
+        id: archive
+        run: |
+          name=$(node -p "require('./plugin/.claude-plugin/plugin.json').name")
+          version=$(node -p "require('./plugin/.claude-plugin/plugin.json').version")
+          mcp_version=$(node -p "require('./plugin/mcp-version.json').version")
+          plugin_archive="${name}-v${version}.plugin"
+          mcpb="foldseek-server-v${mcp_version}.mcpb"
+          npm run package:all
+          cd dist
+          sha256sum "$plugin_archive" > "$plugin_archive.sha256"
+          sha256sum "$mcpb" > "$mcpb.sha256"
+          echo "name=$plugin_archive" >> "$GITHUB_OUTPUT"
+          echo "plugin=dist/$plugin_archive" >> "$GITHUB_OUTPUT"
+          echo "plugin_checksum=dist/$plugin_archive.sha256" >> "$GITHUB_OUTPUT"
+          echo "mcpb=dist/$mcpb" >> "$GITHUB_OUTPUT"
+          echo "mcpb_checksum=dist/$mcpb.sha256" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.archive.outputs.name }}
+          path: |
+            ${{ steps.archive.outputs.plugin }}
+            ${{ steps.archive.outputs.plugin_checksum }}
+            ${{ steps.archive.outputs.mcpb }}
+            ${{ steps.archive.outputs.mcpb_checksum }}
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Publish immutable GitHub release assets
+        if: inputs.publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ inputs.tag }}
+          PLUGIN: ${{ steps.archive.outputs.plugin }}
+          PLUGIN_CHECKSUM: ${{ steps.archive.outputs.plugin_checksum }}
+          MCPB: ${{ steps.archive.outputs.mcpb }}
+          MCPB_CHECKSUM: ${{ steps.archive.outputs.mcpb_checksum }}
+        run: |
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            mkdir -p "$RUNNER_TEMP/published-plugin"
+            gh release download "$TAG" --dir "$RUNNER_TEMP/published-plugin" \
+              --pattern "$(basename "$PLUGIN")" --pattern "$(basename "$PLUGIN_CHECKSUM")" \
+              --pattern "$(basename "$MCPB")" --pattern "$(basename "$MCPB_CHECKSUM")"
+            cd "$RUNNER_TEMP/published-plugin"
+            sha256sum --check "$(basename "$PLUGIN_CHECKSUM")"
+            sha256sum --check "$(basename "$MCPB_CHECKSUM")"
+            cd "$GITHUB_WORKSPACE"
+            node tools/compare-archive-contents.mjs \
+              "$PLUGIN" "$RUNNER_TEMP/published-plugin/$(basename "$PLUGIN")"
+            node tools/compare-archive-contents.mjs \
+              "$MCPB" "$RUNNER_TEMP/published-plugin/$(basename "$MCPB")"
+            echo "$TAG already carries content-identical immutable assets"
+          else
+            gh release create "$TAG" "$PLUGIN" "$PLUGIN_CHECKSUM" "$MCPB" "$MCPB_CHECKSUM" --verify-tag \
+              --title "Foldseek Server plugin $TAG" \
+              --notes "Claude plugin and matching Desktop MCPB built from the same pinned Foldseek MCP runtime. See the bundled CHANGELOG for requirements and upgrade notes."
+          fi

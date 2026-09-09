@@ -1,0 +1,14 @@
+# OS / editor
+.DS_Store
+._*
+*.swp
+.idea/
+.vscode/
+
+node_modules/
+
+# derived and regenerable
+runs/
+**/runs/
+/dist/
+*.plugin

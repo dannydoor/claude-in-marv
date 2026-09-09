@@ -1,0 +1,14 @@
+{
+  "name": "foldseek-server-mcp",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Search protein structures with Foldseek, align them with FoldMason, search 3D motifs with FoldDisco, and export reproducible result artifacts.",
+  "license": "GPL-3.0-or-later",
+  "type": "module",
+  "bin": {
+    "foldseek-server-mcp": "scripts/foldseek-server-mcp.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

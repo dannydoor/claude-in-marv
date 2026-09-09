@@ -1,0 +1,68 @@
+---
+name: foldseek-hit-analysis
+description: Use when reviewing completed Foldseek or Multimer hits and choosing candidates for a FoldMason alignment.
+---
+
+# foldseek-hit-analysis
+
+## Accepted starting state
+
+Use a completed `foldseek` or `multimer` ticket and the intended `queryIdx` ([query-index](../references/mcp-contract.md#query-index)).
+
+## Summary facts to check
+
+Read per-database row counts, taxonomy availability, top hits, the full `ranking` object, query length and header, and top-level `completeness`.
+
+## Export condition and roles
+
+Summary-only count and cap questions need no export; individual-hit questions require each available `rows` role ([roles-and-cardinality](../references/artifact-contract.md#roles-and-cardinality)).
+On cloud Cowork, stage the exported descriptor files with `device_stage_files` ([cowork-staging](../references/artifact-contract.md#cowork-staging)).
+
+## Default workflow
+
+1. Answer count, location, and cap questions from the summary when possible.
+2. Otherwise export, preflight, and choose one analysis: `hit/survey` for database distribution, `hit/table` for leading hits, `hit/coverage` for query-residue coverage, or `hit/member-selection` for alignment candidates.
+3. Report per database; merge only a ranking field the server marks cross-database comparable ([row-order](../references/mcp-contract.md#row-order)).
+4. Query `hits.tsv` or `candidates.tsv` with `awk` to filter by named metrics and to print each hit under consideration; never read a table whole, and never cite a hit id without printing its row first ([TSV query patterns](../references/interpretation.md#tsv-query-patterns)).
+5. For a member pool, state the criteria, make an explicit choice from the printed candidates, and hand the chosen row ids to `server-operations`.
+
+## Conditional branches
+
+**Several analyses are genuinely needed.** Run each separately, then combine their high-level insights without listing every available metric.
+
+**A member pool is requested.** The script applies no identity band, coverage floor, taxonomic quota or automatic balance rule.
+Use Foldseek hit `seqId`, coverage, rank, organism, domain context, and description to choose a balanced set explicitly ([hit-set interpretation](../references/interpretation.md#hit-set-interpretation)).
+Avoid a pool made only of near-identical hits, which can make conservation uninformatively uniform, and avoid a pool so divergent that alignment and conserved signal become unreliable.
+Prefer a useful spread around moderately similar hits rather than imposing one universal identity cutoff.
+State the criteria and the chosen row ids; descriptions are source annotations for candidate review, not established functions.
+
+**A complex is analysed.** Keep per-chain coverage distinct from any labelled aggregate.
+
+## Submission contract
+
+None; this skill reads an existing artifact and does not mutate server state.
+
+## Subcommands
+
+`hit/survey`, `hit/table`, `hit/coverage`, and `hit/member-selection`, all analysis version 1.
+Run them through the shared [entry point](../references/analysis-cli.md#entry-point); `hit/table` previews descriptions and may keep the requested top rows without inferring function.
+
+## Claim limits
+
+Report per database first, retain the server's ranking semantics, and label any alternative sort.
+Capped rows support statements about the export, not the full database; identity is a percentage and coverage is a fraction ([units-and-definitions](../references/reporting.md#units-and-definitions)).
+Phyletic interpretation belongs to `foldseek-phyletic-profile` ([claim-limits](../references/reporting.md#claim-limits)).
+
+## Mutation and handoff
+
+This skill makes no mutation.
+`server-operations` saves and forwards chosen hits; `foldseek-phyletic-profile` owns tree-based clade analysis.
+
+## Output shapes
+
+Facts each outcome must establish and hand on; the answer states them in the reader's terms ([audience](../references/reporting.md#audience)).
+
+- **Success** — the requested hit observations, criteria and ids for any explicit choice, material limits, and the search result URL.
+- **Valid empty** — a resolved zero-hit result with query length and the databases searched ([zero-hit](../references/mcp-contract.md#zero-hit)).
+- **Degraded** — a capped table or unusable ranking field, with its consequence stated.
+- **Error** — explain which search result or input could not be read and what must be corrected; stop without further computation.
