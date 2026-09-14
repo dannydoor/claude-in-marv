@@ -8,8 +8,11 @@ Pass 0-based `column` values, never display-only `oneBased`; the wrong base can 
 ## entry-order
 
 Alignment entry order has no relation to submission order, query identity, or size.
-Choose a reference by name and confirm the returned `entryName`; names and residue counts require the exported roster, not the summary.
-`includeQuery` forwards the submitted structure, which can differ from the addressed query in multi-chain input.
+Choose the structure of interest by `name` in QC `members.tsv`, then pass the numeric `index` from that row as `entry` to `select_msa_columns`.
+If QC is unavailable, export the alignment and run `msa/member-audit` to obtain the current roster names and indices.
+Continue only when the returned `entryName` exactly matches the chosen name.
+Pass the verified column selection's `name`, not an entry index, to `send_to`.
+For a multi-chain Foldseek source, select the chain through `queries.items[]`; `includeQuery: true` then adds only that selected query chain to FoldMason.
 
 ## selection-naming
 

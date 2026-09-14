@@ -8,7 +8,7 @@ description: Use for submitting Foldseek-family jobs, checking results, saving s
 ## Accepted starting state
 
 Start without a ticket to list databases or submit a job, with any ticket to check status, and with a completed `foldseek` or `multimer` ticket to select or forward hits.
-Use `queryIdx`, default 0; a non-zero value needs caller provenance and a multi-query ticket ([query-index](../references/mcp-contract.md#query-index)).
+Use `queryIdx`, default 0; for a multi-chain query, select the chain through the completed result's `queries.items[]` mapping and preserve that index throughout the workflow ([query-index](../references/mcp-contract.md#query-index)).
 
 ## Summary facts to check
 
@@ -24,13 +24,15 @@ Hand the descriptor and required roles to the downstream skill rather than readi
 
 1. Call `list_databases({tool})`, begin with the complete compatible set, and exclude only databases that do not serve the question; use returned ids rather than remembered paths ([databases](../references/mcp-contract.md#databases)).
 2. Submit once with `validateOnly: true`, correct any reported problem, then submit for real ([response-channels](../references/mcp-contract.md#response-channels)).
-3. Record the input echo, ticket, query index, and resolved accession or file roster.
+3. Record the input echo, ticket, query index, resolved chain when available, and resolved accession or file roster.
 4. Poll `get_ticket_status` to a terminal state; continue only on `COMPLETE` ([polling](../references/mcp-contract.md#polling)).
 5. Read `get_result_summary`; export only when the requested answer needs data not present there.
 
 ## Conditional branches
 
 **Refused query index.** Report the valid range from the server and stop; a refusal is not an empty result ([zero-hit](../references/mcp-contract.md#zero-hit)).
+
+**Multi-chain query.** Choose the structure chain of interest from `queries.items[]` and keep its `queryIdx`; if the mapping is absent or has no chain labels, ask for an explicit index rather than guessing from order ([query-index](../references/mcp-contract.md#query-index)).
 
 **Selection and forwarding.** List existing names, describe the source selection when its prior size matters, mutate, validate the response, and then call `send_to` ([selection-naming](../references/workflow-state.md#selection-naming), [hit-selection-validator](../references/workflow-state.md#hit-selection-validator), [lineage](../references/workflow-state.md#lineage)).
 

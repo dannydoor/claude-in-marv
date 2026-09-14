@@ -33,13 +33,13 @@ Add the public marketplace, install the plugin, and reload the active session:
 
 Cowork needs two installations because its cloud session does not execute the MCP runtime bundled in the plugin:
 
-1. [Download `foldseek-server-v0.1.0.mcpb`](https://github.com/dannydoor/foldseek-claude-plugin/releases/download/v2.0.0/foldseek-server-v0.1.0.mcpb) from this plugin's release.
+1. [Download `foldseek-server-v0.1.1.mcpb`](https://github.com/dannydoor/foldseek-claude-plugin/releases/download/v2.0.0/foldseek-server-v0.1.1.mcpb) from this plugin's release.
 2. In Claude Desktop, open **Settings → Extensions → Advanced settings → Install Extension…**, select the MCPB and keep Desktop open.
 3. Open **Cowork → Customize → Plugins → + → Add marketplace**, then add `https://github.com/dannydoor/foldseek-claude-plugin` from a repository.
 4. Install **foldseek-server** from **foldseek-server-tools**, then start a fresh Cowork session.
 5. When asked, allow Desktop to use `~/foldseek-server-shared` or the override chosen during MCPB installation.
 
-Plugin 2.0.0 requires MCPB 0.1.0.
+Plugin 2.0.0 requires MCPB 0.1.1.
 Both installable files are produced from the same checked-in MCP runtime and published together.
 
 You can alternatively [download the `.plugin` file](https://github.com/dannydoor/foldseek-claude-plugin/releases/download/v2.0.0/foldseek-server-v2.0.0.plugin) from the same release and upload it from the Plugins page.

@@ -15,6 +15,10 @@ Match exposed tools by the logical name suffix; host prefixes are not stable or 
 
 `queryIdx` is an integer defaulting to 0; single-unit jobs refuse non-zero values.
 FoldMason, FoldDisco, and not-ready summaries omit `queryIdx`; do not synthesize zero.
+Complete Foldseek and Multimer summaries and manifests report `queries.count` and may include bounded `queries.items[]` entries that map each `queryIdx` to its source `chain`.
+For a multi-chain query, choose the chain of interest from this mapping and keep its `queryIdx` unchanged through summary, export, hit selection, and forwarding.
+If `queries.items` is absent or the relevant `chain` is `null`, do not infer chain order; require an explicit `queryIdx` from the user.
+When Foldseek hits are sent to FoldMason with `includeQuery: true`, MCP 0.1.1 adds only the selected query chain for that `queryIdx`.
 
 ## response-channels
 
@@ -41,7 +45,7 @@ Then call `get_result_summary`; export only when rows, columns, taxonomy, or coo
 ## databases
 
 Call `list_databases({tool})` before submission and use returned ids; availability varies by tool and deployment.
-`validateOnly: true` checks inputs without creating a ticket, but does not prove that a database combination is valid.
+`validateOnly: true` checks the exact input intended for submission without creating a ticket; do not use it as a residue-lookup mechanism, and it does not prove that a database combination is valid.
 `send_to` also takes `databases`; FoldDisco forwarding requires at least one motif-capable database and refuses omission or ineligible paths before creating a job.
 `dbIndex` is result order, not submitted-list position.
 
