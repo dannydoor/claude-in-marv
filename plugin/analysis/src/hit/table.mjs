@@ -53,6 +53,12 @@ export const table = {
                         db: record?.id ?? null,
                         target: row.target,
                         rankInDatabase: position,
+                        qLen: finite(row.qLen),
+                        dbLen: finite(row.dbLen),
+                        qStartPos: finite(row.qStartPos),
+                        qEndPos: finite(row.qEndPos),
+                        dbStartPos: finite(row.dbStartPos),
+                        dbEndPos: finite(row.dbEndPos),
                         value: row[field] ?? null,
                         seqId: row.seqId ?? null,
                         coverage: coverage === null ? null : round(coverage, 3),
@@ -135,6 +141,8 @@ export const table = {
     },
 };
 
+const finite = value => (Number.isFinite(value) ? value : null);
+
 const compare = (direction, a, b) => {
     const left = Number.isFinite(a) ? a : null;
     const right = Number.isFinite(b) ? b : null;
@@ -146,7 +154,8 @@ const compare = (direction, a, b) => {
 
 function hitsTable(rows, mergedRank, comparable) {
     const header = ['id', 'dbIndex', 'db', 'rankInDatabase', ...(comparable ? ['rankMerged'] : []),
-        'target', 'value', 'seqId', 'coverage', 'taxName', 'description'];
+        'target', 'qLen', 'dbLen', 'qStartPos', 'qEndPos', 'dbStartPos', 'dbEndPos',
+        'value', 'seqId', 'coverage', 'taxName', 'description'];
     return {
         header,
         rows: rows.map(row => ({ ...row, rankMerged: mergedRank.get(row.id) ?? '' })),

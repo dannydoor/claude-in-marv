@@ -9,8 +9,11 @@ import {
     ENVELOPE_FLAGS, UNIVERSAL_FLAGS, optionalPositiveInteger,
 } from '../../plugin/analysis/src/cli/args.mjs';
 import { table as hitTable } from '../../plugin/analysis/src/hit/table.mjs';
+import { memberSelection } from '../../plugin/analysis/src/hit/member-selection.mjs';
 import { phyletic } from '../../plugin/analysis/src/hit/phyletic.mjs';
 import { columnRanking } from '../../plugin/analysis/src/msa/column-ranking.mjs';
+import { columnComposition } from '../../plugin/analysis/src/msa/column-composition.mjs';
+import { columnResidues } from '../../plugin/analysis/src/msa/column-residues.mjs';
 import { Warnings } from '../../plugin/analysis/src/io/warnings.mjs';
 import { writeTsv } from '../../plugin/analysis/src/io/write.mjs';
 import { tmp } from '../support/temp.mjs';
@@ -22,7 +25,7 @@ const EXPECTED = {
     folddisco: ['residue-distances', 'residue-retention', 'result-metrics', 'shortlist'],
     hit: ['coverage', 'member-selection', 'phyletic', 'survey', 'table'],
     msa: ['author-numbering', 'blocks', 'column-ranking', 'compactness', 'member-audit', 'qc',
-        'substitution-proposal'],
+        'column-composition', 'column-residues'],
     workflow: ['reach'],
 };
 
@@ -83,7 +86,7 @@ test('reach keeps its collection equivalences as fixed versioned data', () => {
 test('hit/table preserves descriptions and previews top-ranked hits', async () => {
     const root = tmp('hit-description-');
     const rows = [
-        { id: '0#0', target: 'a', score: 10, qLen: 100, qStartPos: 1, qEndPos: 80, description: 'Kinase' },
+        { id: '0#0', target: 'a', score: 10, qLen: 100, dbLen: 120, qStartPos: 1, qEndPos: 80, dbStartPos: 4, dbEndPos: 83, description: 'Kinase' },
         { id: '0#1', target: 'b', score: 9, qLen: 100, qStartPos: 1, qEndPos: 70, description: 'Kinase' },
         { id: '0#2', target: 'c', score: 8, qLen: 100, qStartPos: 1, qEndPos: 60, description: 'Beta\tprotein\nnote' },
         { id: '0#3', target: 'd', score: 7, qLen: 100, qStartPos: 1, qEndPos: 50 },
@@ -111,6 +114,12 @@ test('hit/table preserves descriptions and previews top-ranked hits', async () =
     });
     assert.match(result.summary.descriptionBasis, /top-ranked hits; no function inference/);
     assert.equal(result.tables.hits.header.at(-1), 'description');
+    assert.deepEqual(result.tables.hits.rows[0], {
+        id: '0#0', dbIndex: 0, db: 'db', target: 'a', rankInDatabase: 1,
+        qLen: 100, dbLen: 120, qStartPos: 1, qEndPos: 80, dbStartPos: 4, dbEndPos: 83,
+        value: 10, seqId: null, coverage: 0.8, taxName: null, description: 'Kinase', rankMerged: 1,
+    });
+    assert.equal(result.tables.hits.rows[1].dbLen, null);
     assert.equal(result.tables.hits.rows[2].description, 'Beta\tprotein\nnote');
     assert.equal(warnings.toJSON()[0].code, 'MISSING_DESCRIPTIONS');
 
@@ -119,6 +128,32 @@ test('hit/table preserves descriptions and previews top-ranked hits', async () =
     const written = fs.readFileSync(file, 'utf8');
     assert.equal(written.split('\n').length, rows.length + 2, 'a description cannot add TSV rows');
     assert.match(written, /Beta\\tprotein\\nnote/);
+});
+
+test('hit/member-selection carries alignment lengths and spans without inventing missing values', async () => {
+    const root = tmp('member-spans-');
+    const rows = [
+        { id: '0#0', target: 'a', score: 10, qLen: 100, dbLen: 120, qStartPos: 1, qEndPos: 80, dbStartPos: 4, dbEndPos: 83 },
+        { id: '0#1', target: 'b', score: 9, qLen: 100, qStartPos: 2, qEndPos: 70 },
+    ];
+    fs.writeFileSync(path.join(root, 'rows.jsonl'), `${rows.map(JSON.stringify).join('\n')}\n`);
+    const result = await memberSelection.run({
+        root,
+        ranking: { field: 'score', label: 'Score', direction: 'higher', crossDatabaseComparable: true },
+        roles: { rows: { units: [{ dbIndex: 0, path: 'rows.jsonl' }] } },
+        selected: [0], records: new Map([[0, { id: 'db', parsedRows: rows.length }]]),
+        warnings: new Warnings(),
+    });
+
+    assert.deepEqual(result.tables.candidates.header.slice(5, 11),
+        ['qLen', 'dbLen', 'qStartPos', 'qEndPos', 'dbStartPos', 'dbEndPos']);
+    assert.deepEqual(result.tables.candidates.rows[0], {
+        id: '0#0', dbIndex: 0, db: 'db', target: 'a', rankInDatabase: 1,
+        qLen: 100, dbLen: 120, qStartPos: 1, qEndPos: 80, dbStartPos: 4, dbEndPos: 83,
+        rankingValue: 10, seqId: null, coverage: 0.8, organism: null, description: '',
+    });
+    assert.equal(result.tables.candidates.rows[1].dbLen, null);
+    assert.equal(result.tables.candidates.rows[1].dbStartPos, null);
 });
 
 test('hit/phyletic emits exact and descendant hits for one numeric taxon', async () => {
@@ -250,4 +285,69 @@ test('column ranking preserves property vectors without turning them into anothe
     assert.equal(result.tables['columns-ranked'].rows[0].positive, 'hydrophobic aromatic');
     assert.equal(result.tables['columns-ranked'].rows[1].negative, '!hydrophobic');
     assert.match(result.summary.claim, /selecting residues remains an explicit decision/);
+});
+
+test('column composition describes selected columns without proposing a motif', async () => {
+    const root = msaFixture();
+    const warnings = new Warnings();
+    const result = await columnComposition.run(msaContext(root, warnings, [['columns', '0,1'], ['entry', 'query']]));
+
+    assert.equal(result.tables['column-composition'].rows[0].referenceGlyph, 'A');
+    assert.equal(result.tables['column-composition'].rows[1].status, 'reference-gap');
+    assert.deepEqual(Object.keys(result.summary).sort(),
+        ['columnsRequested', 'entryIndex', 'entryName', 'groupCodes', 'perColumn', 'claimLimit'].sort());
+    assert.match(result.summary.claimLimit, /no substitution or motif residue is selected automatically/);
+    assert.deepEqual(warnings.toJSON().map(warning => warning.code), ['REFERENCE_RESIDUE_ABSENT']);
+});
+
+test('column residues preserve gaps and map each selected column across the roster', async () => {
+    const root = msaFixture();
+    const result = await columnResidues.run(msaContext(root, new Warnings(), [['columns', '0,1']]));
+
+    assert.deepEqual(result.tables['column-residues'].rows, [
+        { column: 0, oneBased: 1, entryIndex: 0, entryName: 'query', glyph: 'A', gap: false, residueIndex: 0, label: 'A1' },
+        { column: 0, oneBased: 1, entryIndex: 1, entryName: 'hit', glyph: 'A', gap: false, residueIndex: 0, label: 'B1' },
+        { column: 1, oneBased: 2, entryIndex: 0, entryName: 'query', glyph: '-', gap: true, residueIndex: '', label: '' },
+        { column: 1, oneBased: 2, entryIndex: 1, entryName: 'hit', glyph: 'B', gap: false, residueIndex: 1, label: 'B2' },
+    ]);
+    assert.deepEqual(result.summary, {
+        columnsRequested: [0, 1], entries: 2, rows: 4,
+        claimLimit: 'alignment glyphs and modelled residue mappings only; no functional site or inclusion decision is made',
+    });
+});
+
+function msaFixture() {
+    const root = tmp('column-detail-');
+    fs.writeFileSync(path.join(root, 'entries.json'), JSON.stringify({
+        totalEntries: 2,
+        columns: 3,
+        entries: [
+            { index: 0, name: 'query', residueCount: 2, alignedLength: 3 },
+            { index: 1, name: 'hit', residueCount: 3, alignedLength: 3 },
+        ],
+    }));
+    fs.writeFileSync(path.join(root, 'aa.fasta'), '>query\nA-C\n>hit\nABC\n');
+    fs.writeFileSync(path.join(root, 'residue-map.jsonl'), [
+        { entryName: 'query', occupiedColumns: ['0', '2'], tokens: ['A1', 'A2'] },
+        { entryName: 'hit', occupiedColumns: ['0-2'], tokens: ['B1', 'B2', 'B3'] },
+    ].map(JSON.stringify).join('\n') + '\n');
+    const columns = [
+        { column: 0, occupancy: 1, conservation: { score: 11, positive: ['hydrophobic'], negative: [] }, consensus: { nonGapCount: 2, glyph: 'A', modalFractionNonGap: 1, letters: [{ glyph: 'A', count: 2, logoFraction: 1 }] } },
+        { column: 1, occupancy: 0.5, conservation: { score: 2, positive: ['polar'], negative: ['!hydrophobic'] }, consensus: { nonGapCount: 1, glyph: 'B', modalFractionNonGap: 1, letters: [{ glyph: 'B', count: 1, logoFraction: 1 }] } },
+        { column: 2, occupancy: 1, conservation: { score: 11, positive: ['polar'], negative: [] }, consensus: { nonGapCount: 2, glyph: 'C', modalFractionNonGap: 1, letters: [{ glyph: 'C', count: 2, logoFraction: 1 }] } },
+    ];
+    fs.writeFileSync(path.join(root, 'columns.jsonl'), columns.map(JSON.stringify).join('\n') + '\n');
+    return root;
+}
+
+const msaContext = (root, warnings, args) => ({
+    root,
+    roles: {
+        'msa-entries': { present: true, units: [{ path: 'entries.json' }] },
+        'msa-fasta-aa': { present: true, units: [{ path: 'aa.fasta' }] },
+        'msa-residue-map': { present: true, units: [{ path: 'residue-map.jsonl' }] },
+        'msa-columns': { present: true, units: [{ path: 'columns.jsonl' }] },
+    },
+    warnings,
+    args: new Map(args),
 });

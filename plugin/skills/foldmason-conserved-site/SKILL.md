@@ -21,10 +21,12 @@ On cloud Cowork, stage the exported descriptor files with `device_stage_files` (
 
 ## Default workflow
 
-1. Run `msa/column-ranking` to order columns by conservation score, with column index as the deterministic tie-break; before selecting residues, inspect each shortlisted column's positive and negative properties, identity state, reference glyph, and occupancy.
-2. Run `msa/compactness` for chosen columns only when coordinates and a residue map exist, and use it as supporting geometry rather than a selection gate ([compactness interpretation](../references/interpretation.md#compactness-interpretation)).
-3. Query `columns-ranked.tsv` with `awk` to print shortlisted column-of-interests's fields before choosing it; filter across the whole alignment through `columns.tsv`, because the ranked table holds only the displayed top rows ([table row coverage](../references/interpretation.md#table-row-coverage), ([TSV query patterns](../references/interpretation.md#tsv-query-patterns))).
-4. Join results by column, keeping `column` as the 0-based machine value and `oneBased` for display only.
+1. Run `msa/column-ranking` to order columns by conservation score, with column index as the deterministic tie-break.
+2. Run `msa/column-composition` for shortlisted columns and inspect the reference residue, consensus, residue frequencies, property vector, occupancy, and conservation state before choosing.
+3. Use `msa/column-residues` when gaps or member-specific residue mappings could change the interpretation.
+4. Run `msa/compactness` for chosen columns only when coordinates and a residue map exist, and use it as supporting geometry rather than a selection gate ([compactness interpretation](../references/interpretation.md#compactness-interpretation)).
+5. Query the generated TSVs with `awk` before naming a candidate; filter the complete `columns.tsv` when a capped ranking table may omit rows ([table row coverage](../references/interpretation.md#table-row-coverage), [TSV query patterns](../references/interpretation.md#tsv-query-patterns)).
+6. Join results by `column`, keeping it as the 0-based machine value and using `oneBased` for display only.
 
 Property vectors, modal fraction, occupancy and geometry inform interpretation; they do not alter the score order or establish a functional site.
 Never read a table whole, and never name a candidate column without having printed its row.
@@ -43,8 +45,7 @@ None; this skill creates no selection and forwards nothing.
 
 ## Subcommands
 
-`msa/column-ranking` uses `column-ranking-v1`; `msa/compactness` uses `site-geometry-v1`.
-Run both through the shared [entry point](../references/analysis-cli.md#entry-point).
+`msa/column-ranking`, `msa/column-composition`, `msa/column-residues`, and `msa/compactness` are run through the shared [entry point](../references/analysis-cli.md#entry-point).
 
 ## Claim limits
 

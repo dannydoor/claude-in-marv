@@ -16,7 +16,7 @@ For a multi-chain Foldseek source, select the chain through `queries.items[]`; `
 
 ## selection-naming
 
-Use a new destination name `to-<destination>__NNN`, choosing one above the highest name returned by `action: "list"` and never reusing cleared names.
+Use a meaningful new name that reflects the selection's purpose; add a numeric suffix only to avoid a collision found through `action: "list"`, and never reuse a cleared name.
 Use copy-on-write and never mutate or delete a selection after forwarding because downstream provenance names it.
 
 ## lineage

@@ -29,6 +29,12 @@ export const memberSelection = {
                         db: record?.id ?? null,
                         target: row.target,
                         rankInDatabase,
+                        qLen: finite(row.qLen),
+                        dbLen: finite(row.dbLen),
+                        qStartPos: finite(row.qStartPos),
+                        qEndPos: finite(row.qEndPos),
+                        dbStartPos: finite(row.dbStartPos),
+                        dbEndPos: finite(row.dbEndPos),
                         rankingValue: field === null ? null : (row[field] ?? null),
                         seqId: Number.isFinite(row.seqId) ? row.seqId : null,
                         coverage: coverage === null ? null : round(coverage, 3),
@@ -61,8 +67,10 @@ export const memberSelection = {
     },
 };
 
+const finite = value => (Number.isFinite(value) ? value : null);
+
 const candidatesTable = rows => ({
-    header: ['id', 'dbIndex', 'db', 'target', 'rankInDatabase', 'rankingValue', 'seqId', 'coverage',
-        'organism', 'description'],
+    header: ['id', 'dbIndex', 'db', 'target', 'rankInDatabase', 'qLen', 'dbLen', 'qStartPos', 'qEndPos',
+        'dbStartPos', 'dbEndPos', 'rankingValue', 'seqId', 'coverage', 'organism', 'description'],
     rows,
 });

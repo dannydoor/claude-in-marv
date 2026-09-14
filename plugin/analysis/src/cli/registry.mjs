@@ -10,7 +10,8 @@ import { memberAudit } from '../msa/member-audit.mjs';
 import { blocks } from '../msa/blocks.mjs';
 import { columnRanking } from '../msa/column-ranking.mjs';
 import { compactness } from '../msa/compactness.mjs';
-import { substitutionProposal } from '../msa/substitution-proposal.mjs';
+import { columnComposition } from '../msa/column-composition.mjs';
+import { columnResidues } from '../msa/column-residues.mjs';
 import { authorNumbering } from '../msa/author-numbering.mjs';
 import { resultMetrics } from '../folddisco/result-metrics.mjs';
 import { residueRetention } from '../folddisco/residue-retention.mjs';
@@ -21,7 +22,7 @@ import { reach } from '../workflow/reach.mjs';
 const entries = [
     survey, table, coverage, phyletic, memberSelection,
     qc, memberAudit, blocks, columnRanking, compactness,
-    substitutionProposal, authorNumbering,
+    columnComposition, columnResidues, authorNumbering,
     resultMetrics, residueRetention, shortlist, residueDistances,
     reach,
 ];

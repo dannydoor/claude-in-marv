@@ -28,9 +28,9 @@ Undeclared flags are refused rather than ignored.
 | `--taxon <NCBI-tax-id>` | `hit/phyletic` | emit hits assigned to that taxon or a descendant through the exported taxonomy tree |
 | `--sort <field>` `--top <n>` | `hit/table` | alternative ranking; rows shown per database |
 | `--top <n>` | `msa/blocks`, `msa/column-ranking`, `folddisco/shortlist` | rows / columns shown |
-| `--columns <list>` | `msa/compactness`, `msa/substitution-proposal`, `msa/author-numbering` | required candidate columns |
+| `--columns <list>` | `msa/compactness`, `msa/column-composition`, `msa/column-residues`, `msa/author-numbering` | required candidate columns |
 | `--reference <name>` | `msa/compactness` | required geometry entry name |
-| `--entry <name>` | `msa/substitution-proposal`, `msa/author-numbering` | required MSA row name |
+| `--entry <name>` | `msa/column-composition`, `msa/author-numbering` | required MSA row name |
 | `--structure <path>` | `msa/author-numbering` | required caller-supplied PDB file |
 | `--against <root>` `--via <root>` `--assert <type>:<payload>` | `workflow/reach` | comparison artifact; repeatable ancestry root; repeatable run-scoped assertion |
 

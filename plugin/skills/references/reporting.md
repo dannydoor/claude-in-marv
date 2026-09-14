@@ -71,7 +71,6 @@ Warnings aggregate by code and scope with a count, bounded sample, and table pat
 | `MISSING_COLUMN_METRIC` | note | exclude unscored columns and report their count |
 | `SINGLE_MEMBER_SUPPORT` | note | one carrier is not a family feature |
 | `REFERENCE_RESIDUE_ABSENT` | blocking | the motif is not the intended site |
-| `MOTIF_LIMIT_EXCEEDED` | blocking | submit fewer than 32 residues |
 | `PATTERN_WIDTH_MISMATCH` | blocking | make no per-residue match claim |
 | `COORDINATE_COUNT_MISMATCH` | blocking | make no geometric claim |
 | `QUERY_RESIDUES_UNAVAILABLE` | caution | do not use full-match rate |

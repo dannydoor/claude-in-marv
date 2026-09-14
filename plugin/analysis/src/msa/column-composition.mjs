@@ -1,4 +1,4 @@
-// Report reference residues and conservation evidence for substitution choices.
+// Describe selected columns without choosing substitutions or motif residues.
 
 import { loadEntries, loadColumns, loadAligned, round, GAP } from './alignment.mjs';
 import { namedEntry, requestedColumns } from './motif-input.mjs';
@@ -6,10 +6,9 @@ import { namedEntry, requestedColumns } from './motif-input.mjs';
 const GROUP = Object.freeze({
     positive: 'p', negative: 'n', polar: 'h', hydrophobic: 'b', aromatic: 'a',
 });
-const MOTIF_RESIDUE_LIMIT = 32;
 
-export const substitutionProposal = {
-    name: 'msa/substitution-proposal',
+export const columnComposition = {
+    name: 'msa/column-composition',
     version: 1,
     roles: ['msa-columns', 'msa-entries', 'msa-fasta-aa'],
     requires: ['msa-columns', 'msa-entries', 'msa-fasta-aa'],
@@ -71,23 +70,17 @@ export const substitutionProposal = {
             });
         }
 
-        if (requested.length > MOTIF_RESIDUE_LIMIT) {
-            context.warnings.add('MOTIF_LIMIT_EXCEEDED', {
-                facts: { requested: requested.length, limit: MOTIF_RESIDUE_LIMIT },
-            });
-        }
         context.selectors = { entry: reference.name, columns: requested };
 
         const summary = {
             entryName: reference.name,
             entryIndex: reference.index,
             columnsRequested: requested,
-            motifResidueLimit: MOTIF_RESIDUE_LIMIT,
             groupCodes: GROUP,
             perColumn,
-            claimLimit: 'evidence for an explicit substitution choice; no group code or residue set is selected automatically',
+            claimLimit: 'descriptive column composition and property evidence; no substitution or motif residue is selected automatically',
         };
-        return { summary, tables: { substitutions: tableOf(perColumn, reference) } };
+        return { summary, tables: { 'column-composition': tableOf(perColumn, reference) } };
     },
 };
 

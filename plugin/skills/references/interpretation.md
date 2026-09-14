@@ -56,7 +56,7 @@ Some tables hold every row of the analysed result, while others hold only the di
 |---|---|
 | `hits.tsv` | every row per database, unless `--top` was passed to `hit/table` |
 | `candidates.tsv`, `coverage-runs.tsv`, `db-summary.tsv`, `clades.tsv`, `taxon-hits.tsv` | complete |
-| `columns.tsv`, `columns-ranked.tsv`, `members.tsv`, `blocks.tsv`, `pairwise.tsv`, `substitutions.tsv`, `numbering.tsv` | complete |
+| `columns.tsv`, `columns-ranked.tsv`, `column-composition.tsv`, `column-residues.tsv`, `members.tsv`, `blocks.tsv`, `pairwise.tsv`, `numbering.tsv` | complete |
 | `shortlist.tsv` | top 20 rows per database by default; raise `--top` for more |
 | `strata.tsv`, `patterns.tsv`, `residue-distances.tsv`, `hit-distance-summary.tsv`, `residue-distance-summary.tsv`, `intersection.tsv` | complete |
 
@@ -76,9 +76,9 @@ To filter across all FoldDisco rows, rerun `folddisco/shortlist` with a sufficie
 | Output | Columns and values |
 |---|---|
 | `db-summary.tsv` | `dbIndex`, `id`; `parsedRows` accepted rows; `rowsRead` scanned rows; `taxonomyTree` boolean; top hit id/target; ranking-value quantiles `q0`, `q25`, `q50`, `q75`, and `q100`. |
-| `hits.tsv` | `id`, database fields and ranks; `target`; ranking `value`; `seqId`; query `coverage`; `taxName`; `description`. |
+| `hits.tsv` | `id`, database fields and ranks; `target`; query and target lengths; inclusive query and target alignment endpoints; ranking `value`; `seqId`; query `coverage`; `taxName`; `description`. |
 | `coverage-runs.tsv` | `query`; `queryLength`; inclusive 1-based `from`/`to`; run `len`; hit `depth`; `hitFraction` of that database's hits covering the run. |
-| `candidates.tsv` | Candidate `id`, database, target and rank; `rankingValue`; `seqId`; `coverage`; `organism`; `description`. |
+| `candidates.tsv` | Candidate `id`, database, target and rank; query and target lengths; inclusive query and target alignment endpoints; `rankingValue`; `seqId`; `coverage`; `organism`; `description`. |
 | `clades.tsv` | Taxonomic `rank`, `taxId`, `name`; attributed `hits`; their `fraction`; `identityN`; minimum, median and maximum `seqId`. |
 | `taxon-hits.tsv` | Written by `hit/phyletic --taxon`; hit identity and rank; row `taxId`/`taxName`; requested taxon id/name/rank; `distanceToTaxon` ancestry edges; ranking field/value; `seqId`; coverage; description. |
 
@@ -107,7 +107,8 @@ After alignment, use pairwise identity to find realised redundancy; an overly cl
 | `blocks.tsv` | Inclusive 0-based `from`/`to`, display range `oneBased`, `length`, support count, occupancy minimum/mean/maximum, and semicolon-separated `carriers`. |
 | `columns-ranked.tsv` | `rank`; column indices and `glyph`; `conservationScore`; space-separated `positive`/`negative` properties; identity booleans; occupancy, support, modal fraction, `lddt`, and entropy. |
 | `pairwise.tsv` | Selected residue labels `a` and `b`, with Cα `distanceA` in ångström. |
-| `substitutions.tsv` | Column indices, `entryName`, `status`, reference and consensus glyphs, identity and conservation fields, properties, group codes, unmapped properties, and `letters` as `glyph:count:fraction`. |
+| `column-composition.tsv` | Column indices, `entryName`, `status`, reference and consensus glyphs, identity and conservation fields, properties, group codes, unmapped properties, and `letters` as `glyph:count:fraction`. |
+| `column-residues.tsv` | Each selected column across every alignment member: entry index and name, amino-acid glyph, gap state, 0-based modelled `residueIndex`, and exported residue `label`. |
 | `numbering.tsv` | Column indices, `entryName`, `chain`, modelled `residueIndex` and `label`, deposited `authorNumber`/`insertionCode`, residue and alignment-row glyph, and boolean `agrees`. |
 
 ## msa-metric-interpretation
@@ -118,7 +119,7 @@ The amino-acid score becomes 0 when at least 25% of entries are gaps, and residu
 Use score for order, then inspect property vectors, occupancy, reference glyph, modal fraction, and relevant geometry before choosing a column.
 Interpret amino-acid chemistry only from the AA representation; 3Di supports structural-alphabet and gap-pattern observations.
 `nonGapCount` is support depth; `lddt` and `modalFraction` may be empty when the export supplies no usable value.
-Substitution `status` is `identity`, `variable`, `reference-gap`, or `unscored`; lower-case `a n h p b` are group codes, not amino acids.
+Column-composition `status` is `identity`, `variable`, `reference-gap`, or `unscored`; lower-case `a n h p b` are group codes, not amino acids.
 `label` is the 1-based modelled-residue position, while deposited author numbering must come from the same structure after sequence agreement is confirmed.
 
 ## compactness-interpretation

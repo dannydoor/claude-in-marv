@@ -12,7 +12,6 @@ export const WARNING_LEVELS = Object.freeze({
     MISSING_COLUMN_METRIC: 'note',
     SINGLE_MEMBER_SUPPORT: 'note',
     REFERENCE_RESIDUE_ABSENT: 'blocking',
-    MOTIF_LIMIT_EXCEEDED: 'blocking',
     PATTERN_WIDTH_MISMATCH: 'blocking',
     COORDINATE_COUNT_MISMATCH: 'blocking',
     QUERY_RESIDUES_UNAVAILABLE: 'caution',

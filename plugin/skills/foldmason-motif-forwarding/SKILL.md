@@ -7,13 +7,13 @@ description: Use when saving chosen FoldMason columns as a verified motif and fo
 
 ## Accepted starting state
 
-Use a completed `foldmason` ticket, candidate columns from `foldmason-conserved-site`, and a reference entry chosen by name.
+Use a completed `foldmason` ticket, candidate columns from `foldmason-conserved-site`, and a structure of interest chosen by name from QC `members.tsv` or `msa/member-audit`.
 Carry `foldmason-qc` limitations when available.
 
 ## Summary facts to check
 
 Read `totalColumns` and existing `selections[]`.
-The summary has no entry roster, so the default path confirms the reference from the `entryName` returned by `select_msa_columns`; an exported `msa-entries` roster is another valid check ([entry-order](../references/workflow-state.md#entry-order)).
+The summary has no entry roster, so read the chosen name and numeric index from QC `members.tsv` or an exported roster before selection ([entry-order](../references/workflow-state.md#entry-order)).
 
 ## Export condition and roles
 
@@ -23,15 +23,15 @@ On cloud Cowork, stage those exported descriptor files with `device_stage_files`
 
 ## Default workflow
 
-1. Confirm that `entryName` is the intended FoldDisco query structure, use `column` as the 0-based machine value, never forward display-only `oneBased`, and choose a new destination-based selection name ([column-selection-validator](../references/workflow-state.md#column-selection-validator), [selection-naming](../references/workflow-state.md#selection-naming)).
-2. Call `select_msa_columns` with `action: "set"`; validate the complete returned selection state and confirm `entryName`.
+1. Choose the intended FoldDisco query structure by name, read its numeric index, use `column` as the 0-based machine value, never send display-only `oneBased`, and choose a meaningful new selection name ([column-selection-validator](../references/workflow-state.md#column-selection-validator), [selection-naming](../references/workflow-state.md#selection-naming)).
+2. Call `select_msa_columns` with `action: "set"` and the numeric index as `entry`; continue only when the returned `entryName` exactly matches the chosen name.
 3. Show the returned motif, residue mapping, gaps, and dropped substitutions; require confirmation when case-sensitive substitutions or gaps matter ([substitution-case](../references/workflow-state.md#substitution-case)).
 4. Call `list_databases({tool: "folddisco"})`, start from the complete compatible set, exclude only databases that do not serve the question, and pass the remaining ids to `send_to`.
 5. Record the destination ticket and frozen `derivedFrom` roster, then hand it to `folddisco-analysis` ([lineage](../references/workflow-state.md#lineage)).
 
 ## Conditional branches
 
-**Substitution requested.** Run `msa/substitution-proposal`, print candidate columns you want to look from `substitutions.tsv` with `awk` ([TSV query patterns](../references/interpretation.md#tsv-query-patterns)), make the choice explicitly, obtain confirmation, apply it through `select_msa_columns`, and re-check `droppedSubstitutions`.
+**Substitution considered.** Run `msa/column-composition`, inspect the relevant rows in `column-composition.tsv` with `awk`, and decide explicitly whether the evidence supports a case-sensitive substitution before applying it through `select_msa_columns` ([TSV query patterns](../references/interpretation.md#tsv-query-patterns)).
 
 **Author numbering requested.** Run `msa/author-numbering` against a caller-supplied structure and query `numbering.tsv` for rows where `agrees` is not `true`; a sequence mismatch is an error, not a weak result.
 
@@ -41,12 +41,12 @@ On cloud Cowork, stage those exported descriptor files with `device_stage_files`
 
 ## Submission contract
 
-Use one new `to-<destination>__NNN` name per forwarding job.
+Use a meaningful new name for each forwarding job; add a numeric suffix only to avoid a collision.
 Edit a copy rather than a forwarded selection, because downstream lineage records its frozen state ([selection-naming](../references/workflow-state.md#selection-naming)).
 
 ## Subcommands
 
-`msa/substitution-proposal` and `msa/author-numbering` are optional `motif-build-v1` analyses run through the shared [entry point](../references/analysis-cli.md#entry-point).
+`msa/column-composition` and `msa/author-numbering` are optional analyses run through the shared [entry point](../references/analysis-cli.md#entry-point).
 Both take `--entry` and `--columns`; author numbering also takes `--structure` ([accepted-flags](../references/analysis-cli.md#accepted-flags)).
 
 ## Claim limits
