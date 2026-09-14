@@ -163,3 +163,4 @@ For chains, one silent side is `chain-agnostic`, two silent sides have no label,
 For entry-level assemblies, shared values are `assembly-agreed`, while silence or difference is `assembly-agnostic`; structure-level assembly agreement is empty.
 Unrecognised PDB-like shapes remain structure-level and are reported in `summary.matchRule.unparsed`; an ineligible entry key is explained in `summary.matchRule.withheld`.
 `queryOrigin.chain` and `options.via[]` record explicit ancestry; there is no implicit discovery.
+`basis: session-asserted` means recorded ancestry reached the same exact origin and the current-session assertion supplied only the otherwise missing forwarded-query entry identity.

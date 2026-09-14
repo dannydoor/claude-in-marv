@@ -19,6 +19,9 @@ const PAIR = /^([^/\s]+)\/(\d+)$/;
 
 // Require both complete origin pairs in an assertion.
 function parseOrigin(payload) {
+    if (payload === 'session') {
+        return { type: ORIGIN_ASSERTION, mode: 'session', valid: true };
+    }
     const sides = {};
     for (const part of payload.split(',')) {
         const equals = part.indexOf('=');
@@ -41,7 +44,7 @@ function parseOrigin(payload) {
             reason: 'the two sides name different query origins, which is not a common origin',
         };
     }
-    return { type: ORIGIN_ASSERTION, valid: true, left: sides.left, right: sides.right };
+    return { type: ORIGIN_ASSERTION, mode: 'explicit', valid: true, left: sides.left, right: sides.right };
 }
 
 // Database equivalence never establishes query origin.
@@ -109,13 +112,23 @@ export function hopOf(manifest) {
 }
 
 // Resolve the forwarded query from the intermediate alignment roster.
-const QUERY_STEM = 'query';
 const stemOf = name => String(name).replace(/\.[^./]+$/, '');
+const ENCODED_MULTIMER = '-_-_-_';
+const QUERY_ENTRY = /^query(?:_[^/]+)?$/;
+
+// Recognise server-owned query names without coupling ancestry to the multimer suffix grammar.
+const isQueryEntry = name => {
+    const stem = stemOf(name);
+    return QUERY_ENTRY.test(stem)
+        || (stem.startsWith(`query${ENCODED_MULTIMER}`)
+            && stem.length > `query${ENCODED_MULTIMER}`.length
+            && !stem.includes('/'));
+};
 
 export function queryEntryOf(manifest) {
     const entries = manifest?.derivedFrom?.entries;
     if (!Array.isArray(entries)) return { name: null, reason: 'the intermediate records no entry roster' };
-    const matches = entries.filter(entry => stemOf(entry) === QUERY_STEM);
+    const matches = entries.filter(isQueryEntry);
     if (matches.length === 0) {
         // `includeQuery: false`, or a roster built from hits alone.
         return { name: null, reason: 'the intermediate carries no forwarded query entry' };
@@ -149,9 +162,10 @@ export function intermediatePool(supplied) {
 }
 
 // Walk supplied ancestry to an exact ticket and query index.
-export function resolveChain(manifest, pool) {
+export function resolveChain(manifest, pool, { sessionAssertion = false } = {}) {
     const route = [];
     const consumed = [];
+    const sessionAssertedEntries = [];
     const seen = new Set();
     let current = manifest;
     // Bound the walk by the supplied intermediate pool.
@@ -181,6 +195,7 @@ export function resolveChain(manifest, pool) {
                 hops: route.length,
                 route,
                 consumed,
+                sessionAssertedEntries,
             };
         }
         // A partial hop requires its supplied parent artifact.
@@ -206,17 +221,24 @@ export function resolveChain(manifest, pool) {
             }
             const queryEntry = queryEntryOf(parent.manifest);
             if (queryEntry.name === null) {
-                return {
-                    resolved: false,
-                    problem: {
-                        kind: 'unidentified-entry', ticket: hop.ticket, reason: queryEntry.reason,
-                        candidates: queryEntry.candidates ?? [], entryName: hop.entryName, route,
-                    },
-                    route,
-                    consumed,
-                };
-            }
-            if (hop.entryName === null || hop.entryName !== queryEntry.name) {
+                const asserted = sessionAssertion
+                    ? sessionEntryOf(parent.manifest, hop.entryName, queryEntry)
+                    : null;
+                if (asserted !== null) {
+                    sessionAssertedEntries.push({ ticket: hop.ticket, entryName: asserted });
+                } else {
+                    return {
+                        resolved: false,
+                        problem: {
+                            kind: 'unidentified-entry', ticket: hop.ticket, reason: queryEntry.reason,
+                            candidates: queryEntry.candidates ?? [], entryName: hop.entryName, route,
+                        },
+                        route,
+                        consumed,
+                        sessionAssertedEntries,
+                    };
+                }
+            } else if (hop.entryName === null || hop.entryName !== queryEntry.name) {
                 return {
                     resolved: false,
                     problem: {
@@ -226,6 +248,7 @@ export function resolveChain(manifest, pool) {
                     },
                     route,
                     consumed,
+                    sessionAssertedEntries,
                 };
             }
         }
@@ -241,5 +264,21 @@ export function resolveChain(manifest, pool) {
         current = parent.manifest;
     }
     // Exhausting the input-bounded walk is reported as a cycle.
-    return { resolved: false, problem: { kind: 'cyclic', ticket: null, route }, route, consumed };
+    return {
+        resolved: false,
+        problem: { kind: 'cyclic', ticket: null, route },
+        route,
+        consumed,
+        sessionAssertedEntries,
+    };
+}
+
+// A session assertion may identify one roster entry only when the roster lacks a canonical query name.
+function sessionEntryOf(manifest, entryName, queryEntry) {
+    if (queryEntry.reason !== 'the intermediate carries no forwarded query entry') return null;
+    if (typeof entryName !== 'string' || entryName === '') return null;
+    const entries = manifest?.derivedFrom?.entries;
+    if (!Array.isArray(entries)) return null;
+    const matches = entries.filter(entry => stemOf(entry) === entryName);
+    return matches.length === 1 ? entryName : null;
 }

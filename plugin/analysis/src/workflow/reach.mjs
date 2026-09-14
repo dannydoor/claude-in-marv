@@ -157,18 +157,21 @@ export const reach = {
 };
 
 // Missing comparison evidence is a caller-correctable usage error.
-function resolveOrigin(context, assertions) {
+export function resolveOrigin(context, assertions) {
     const supplied = context.via ?? [];
     const pool = intermediatePool(supplied);
     if (pool.clashes.length > 0) {
         refuse('the supplied chain is ambiguous', { rule: CHAIN_RULE, problems: pool.clashes });
     }
 
+    const sessionAssertion = assertions.find(entry =>
+        entry.type === ORIGIN_ASSERTION && entry.parsed.mode === 'session') ?? null;
+
     // A complete manifest resolves without consulting intermediates.
     const walk = manifest => {
         const one = originOf(manifest);
         if (one.resolved) return { resolved: true, origin: one, hops: 1, route: null, consumed: [] };
-        return resolveChain(manifest, pool);
+        return resolveChain(manifest, pool, { sessionAssertion: sessionAssertion !== null });
     };
     const foldWalk = walk(context.manifest);
     const motifWalk = walk(context.against.manifest);
@@ -185,13 +188,23 @@ function resolveOrigin(context, assertions) {
     }
 
     if (sameOrigin(left, right)) {
+        const sessionAssertedEntries = [
+            ...(foldWalk.sessionAssertedEntries ?? []),
+            ...(motifWalk.sessionAssertedEntries ?? []),
+        ];
+        const usedSessionAssertion = sessionAssertedEntries.length > 0;
         // The basis records evidence type, not hop count.
         return {
-            basis: 'derivedFrom-ancestry',
+            basis: usedSessionAssertion ? 'session-asserted' : 'derivedFrom-ancestry',
             rule: CHAIN_RULE,
             left,
             right,
-            asserted: null,
+            asserted: usedSessionAssertion ? {
+                mode: 'session',
+                fact: 'the agent states that it submitted both sides in this continuous session',
+                origin: { ticket: left.ticket, queryIdx: left.queryIdx },
+                queryEntries: sessionAssertedEntries,
+            } : null,
             chain: {
                 hops: { fold: foldWalk.hops ?? 1, motif: motifWalk.hops ?? 1 },
                 route: { fold: foldWalk.route ?? null, motif: motifWalk.route ?? null },
@@ -199,7 +212,8 @@ function resolveOrigin(context, assertions) {
             },
         };
     }
-    const asserted = assertions.find(entry => entry.type === ORIGIN_ASSERTION) ?? null;
+    const asserted = assertions.find(entry =>
+        entry.type === ORIGIN_ASSERTION && entry.parsed.mode === 'explicit') ?? null;
     if (asserted !== null) {
         return {
             basis: 'user-asserted',
@@ -216,6 +230,7 @@ function resolveOrigin(context, assertions) {
         motif: { artifactId: context.against.manifest.artifactId, origin: right, chain: motifWalk.problem ?? null },
         licence: [
             '--via <artifact-root> for each intermediate of the recorded chain',
+            '--assert origin:session only when this agent submitted both sides in the current continuous session and recorded ancestry already converges',
             '--assert origin:left=<ticket>/<queryIdx>,right=<ticket>/<queryIdx>, both pairs complete and naming one origin',
         ],
     });
@@ -232,6 +247,7 @@ function readAssertions(context) {
                 assertion: raw,
                 reason: parsed.reason ?? 'unknown assertion type',
                 accepted: [
+                    'origin:session',
                     'origin:left=<ticket>/<queryIdx>,right=<ticket>/<queryIdx>',
                     'db-equivalence:<left-db-path>=<right-db-path>',
                 ],
@@ -240,7 +256,9 @@ function readAssertions(context) {
         accepted.push({
             type: parsed.type,
             parsed,
-            normalised: { type: parsed.type, left: parsed.left, right: parsed.right },
+            normalised: parsed.mode === 'session'
+                ? { type: parsed.type, mode: parsed.mode }
+                : { type: parsed.type, left: parsed.left, right: parsed.right },
         });
     }
     return accepted;

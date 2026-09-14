@@ -14,8 +14,10 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import {
-    CHAIN_RULE, hopOf, intermediatePool, originOf, queryEntryOf, resolveChain, sameOrigin,
+    CHAIN_RULE, ORIGIN_ASSERTION, hopOf, intermediatePool, originOf, parseAssertion, queryEntryOf,
+    resolveChain, sameOrigin,
 } from '../../plugin/analysis/src/workflow/origin.mjs';
+import { resolveOrigin } from '../../plugin/analysis/src/workflow/reach.mjs';
 
 import { fileURLToPath } from 'node:url';
 
@@ -91,6 +93,105 @@ test('the chain resolves A3 -> A2 -> A1 to the exact (ticket, queryIdx), and to 
     assert.equal(walked.route[0].inheritedFrom, T2);
     // The whole point: the two sides now agree, from recorded ancestry and nothing asserted.
     assert.equal(sameOrigin(originOf(A1), walked.origin), true);
+});
+
+test('a documented chain-specific query name resolves without an assertion', () => {
+    const A2Chain = {
+        ...A2,
+        derivedFrom: { ...A2.derivedFrom, entries: [...A2.derivedFrom.entries.filter(name => name !== 'query.cif'), 'query_A.cif'] },
+    };
+    const A3Chain = { ...A3, derivedFrom: { ...A3.derivedFrom, entryName: 'query_A' } };
+    const strict = resolveChain(A3Chain, poolOf(A2Chain));
+    assert.equal(strict.resolved, true);
+    assert.deepEqual(queryEntryOf(A2Chain), { name: 'query_A', reason: null });
+    assert.equal(strict.sessionAssertedEntries.length, 0);
+});
+
+test('an encoded multimer with the exact query stem resolves without parsing its suffix', () => {
+    const encoded = 'query-_-_-_A_143_0-B_287_143';
+    const A2Multimer = {
+        ...A2,
+        derivedFrom: { ...A2.derivedFrom, entries: [...A2.derivedFrom.entries.filter(name => name !== 'query.cif'), encoded] },
+    };
+    const A3Multimer = { ...A3, derivedFrom: { ...A3.derivedFrom, entryName: encoded } };
+    const strict = resolveChain(A3Multimer, poolOf(A2Multimer));
+    assert.equal(strict.resolved, true);
+    assert.deepEqual(queryEntryOf(A2Multimer), { name: encoded, reason: null });
+    assert.equal(strict.sessionAssertedEntries.length, 0);
+
+    const lookalike = {
+        ...A2Multimer,
+        derivedFrom: { ...A2Multimer.derivedFrom, entries: ['query-copy-_-_-_A_143_0-B_287_143'] },
+    };
+    assert.equal(queryEntryOf(lookalike).name, null);
+});
+
+test('origin:session fills only a nonstandard query-entry identity after ancestry converges', () => {
+    const A2Named = {
+        ...A2,
+        derivedFrom: { ...A2.derivedFrom, entries: [...A2.derivedFrom.entries.filter(name => name !== 'query.cif'), 'reference-chain-A.cif'] },
+    };
+    const A3Named = { ...A3, derivedFrom: { ...A3.derivedFrom, entryName: 'reference-chain-A' } };
+    const strict = resolveChain(A3Named, poolOf(A2Named));
+    assert.equal(strict.resolved, false);
+    assert.equal(strict.problem.kind, 'unidentified-entry');
+
+    const parsed = parseAssertion('origin:session');
+    assert.deepEqual(parsed, { type: ORIGIN_ASSERTION, mode: 'session', valid: true });
+    const assertion = [{ type: parsed.type, parsed, normalised: { type: parsed.type, mode: parsed.mode } }];
+    const result = resolveOrigin({ manifest: A1, against: { manifest: A3Named }, via: [entry(A2Named)] }, assertion);
+
+    assert.equal(result.basis, 'session-asserted');
+    assert.deepEqual(result.left, originOf(A1));
+    assert.deepEqual({ ticket: result.right.ticket, queryIdx: result.right.queryIdx },
+        { ticket: T1, queryIdx: 0 });
+    assert.deepEqual(result.asserted.origin, { ticket: T1, queryIdx: 0 });
+    assert.deepEqual(result.asserted.queryEntries, [{ ticket: T2, entryName: 'reference-chain-A' }]);
+    assert.deepEqual(result.chain.via, [A2.artifactId]);
+});
+
+test('origin:session cannot bypass missing, conflicting, ambiguous, malformed or cyclic lineage', () => {
+    const parsed = parseAssertion('origin:session');
+    const assertion = [{ type: parsed.type, parsed, normalised: { type: parsed.type, mode: parsed.mode } }];
+    const A2Chain = {
+        ...A2,
+        derivedFrom: { ...A2.derivedFrom, entries: ['reference-chain-A.cif'] },
+    };
+    const A3Chain = { ...A3, derivedFrom: { ...A3.derivedFrom, entryName: 'reference-chain-A' } };
+
+    assert.throws(() => resolveOrigin({ manifest: A1, against: { manifest: A3Chain }, via: [] }, assertion),
+        /same query/);
+
+    const different = { ...A2Chain, derivedFrom: { ...A2Chain.derivedFrom, ticket: 'OTHER' } };
+    assert.throws(() => resolveOrigin({ manifest: A1, against: { manifest: A3Chain }, via: [entry(different)] }, assertion),
+        /same query/);
+
+    const duplicate = { artifactId: 'f'.repeat(64), manifest: { ...A2Chain, artifactId: 'f'.repeat(64) } };
+    assert.throws(() => resolveOrigin({ manifest: A1, against: { manifest: A3Chain }, via: [entry(A2Chain), duplicate] }, assertion),
+        /ambiguous/);
+
+    const noRoster = { ...A2Chain, derivedFrom: { ticket: T1, queryIdx: 0 } };
+    assert.equal(resolveChain(A3Chain, poolOf(noRoster), { sessionAssertion: true }).problem.kind,
+        'unidentified-entry');
+
+    const twoNames = { ...A2Chain, derivedFrom: { ...A2Chain.derivedFrom, entries: ['reference-chain-A.cif', 'reference-chain-A.pdb'] } };
+    assert.equal(resolveChain(A3Chain, poolOf(twoNames), { sessionAssertion: true }).problem.kind,
+        'unidentified-entry');
+
+    const loop = {
+        artifactId: 'c'.repeat(64),
+        state: { ticket: 'LOOP', tool: 'foldmason' },
+        derivedFrom: { ticket: 'LOOP', origin: 'fm-entry', entryName: 'reference-chain-A', entries: ['reference-chain-A.cif'] },
+    };
+    assert.equal(resolveChain(loop, poolOf(loop), { sessionAssertion: true }).problem.kind, 'cyclic');
+});
+
+test('origin:session cannot override a recorded canonical query entry', () => {
+    const offAHit = { ...A3, derivedFrom: { ...A3.derivedFrom, entryName: '3gt7-assembly1', entry: 3 } };
+    const walked = resolveChain(offAHit, poolOf(A2), { sessionAssertion: true });
+    assert.equal(walked.resolved, false);
+    assert.equal(walked.problem.kind, 'unidentified-entry');
+    assert.equal(walked.problem.queryEntry, 'query');
 });
 
 test('a chain is a MATCH against the supplied intermediate, never a lookup', () => {

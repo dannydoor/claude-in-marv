@@ -40,6 +40,16 @@ Undeclared flags are refused rather than ignored.
 `--reference` and `--entry` identify entries by name, never by position or query index.
 `--taxon` takes one positive numeric NCBI taxonomy id; names are display annotations and are never resolved locally.
 
+## reach-assertions
+
+Prefer recorded ancestry and provide every intermediate explicitly with repeated `--via`.
+The server-generated FoldMason query entry names `query`, `query_<chain>`, and an encoded multimer whose exact stem is `query` resolve through recorded ancestry without an assertion.
+The encoded suffix is kept opaque rather than revalidated here; other names are not promoted merely because they look query-like.
+`--assert origin:session` is allowed only when the agent submitted both sides in the current uninterrupted session and ancestry already converges on the same ticket and query index.
+It may identify the otherwise unproven forwarded-query entry, but cannot bypass missing or duplicate intermediates, malformed lineage, cycles, or different origins; a successful use reports `basis: session-asserted`, the exact origin pair, the consumed chain, and the asserted entry.
+If those session conditions are not met, require `origin:left=<ticket>/<queryIdx>,right=<ticket>/<queryIdx>` from the user.
+Database equivalence remains a separate `db-equivalence:<left>=<right>` assertion and never establishes query origin.
+
 ## display-caps
 
 `--top` and `--sample` limit only displayed rows, columns or ids; summaries retain full counts and decisions.
