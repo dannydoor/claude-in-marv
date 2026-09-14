@@ -5,7 +5,8 @@
 ## tsv-query-patterns
 
 Every table has a header, uses tabs, writes booleans as `true` or `false`, and leaves unavailable values empty.
-Query a table with `awk` instead of reading it whole: never `cat` or `Read` a generated TSV into the conversation.
+A small bounded TSV may be inspected in full when that is the clearest check.
+For large hit or column tables, use `awk` instead of dumping the table into the conversation.
 Before naming a row or column in a selection, inspect it and verify the fields used for that decision.
 Use the header name instead of a fixed field number so the command remains correct if columns move.
 These thresholds are query examples, not scientific defaults; replace them and state the criterion used.
@@ -70,6 +71,8 @@ To filter across all FoldDisco rows, rerun `folddisco/shortlist` with a sufficie
 `rankingValue` or `value` uses the ranking field and direction recorded in the result summary.
 `seqId` is percent identity on 0–100, while coverage, occupancy, rates, agreement, and retention fields are fractions on 0–1.
 `description`, `organism`, `taxName`, and `targetName` are source annotations, not verified biological conclusions.
+`qLen` and `dbLen` are the query and target lengths, while `qStartPos`/`qEndPos` and `dbStartPos`/`dbEndPos` are inclusive server-reported alignment endpoints.
+Use these fields to review partial alignments, domain boundaries, and disproportionate members; they are evidence for inspection rather than automatic exclusion rules.
 
 ## hit-tables
 
@@ -97,6 +100,7 @@ Use Foldseek hit `seqId` and query coverage to form the initial structural diver
 Only high-identity hits can make conservation uniformly uninformative, while very low identity can weaken alignment and erase a shared signal.
 Choose a reasoned spread of moderately similar hits and consult rank, organism, domain context, and description rather than imposing one universal identity interval.
 After alignment, use pairwise identity to find realised redundancy; an overly close member can be removed when the intended family scope remains represented.
+Use query and target lengths with their aligned spans to identify possible domain truncation, extra domains, or unusually partial coverage before forwarding a member.
 
 ## msa-tables
 
@@ -117,6 +121,7 @@ After alignment, use pairwise identity to find realised redundancy; an overly cl
 The amino-acid score becomes 0 when at least 25% of entries are gaps, and residue types present in no more than `floor(3% of entries)` do not define its property set.
 `positive` names properties shared by retained residue types; `negative` names properties absent from all of them.
 Use score for order, then inspect property vectors, occupancy, reference glyph, modal fraction, and relevant geometry before choosing a column.
+Conservation may reflect structural maintenance, biological function, or both; these measurements do not identify the cause automatically.
 Interpret amino-acid chemistry only from the AA representation; 3Di supports structural-alphabet and gap-pattern observations.
 `nonGapCount` is support depth; `lddt` and `modalFraction` may be empty when the export supplies no usable value.
 Column-composition `status` is `identity`, `variable`, `reference-gap`, or `unscored`; lower-case `a n h p b` are group codes, not amino acids.

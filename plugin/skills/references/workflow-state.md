@@ -33,7 +33,8 @@ Record the source selection, what changed, why it changed, and what the comparis
 ## hit-selection-validator
 
 `select_hits` has read-only `list` and `describe`, plus mutating `set`, `add`, `remove`, `clear`, `copy`, and `delete`.
-Before forwarding, require empty `rejected` and validate the total post-operation `size`:
+Before forwarding, require `rejected` to be absent or an empty array and validate the total post-operation `size`.
+A non-empty `rejected` array blocks forwarding:
 
 | Action | Expected size |
 |---|---|

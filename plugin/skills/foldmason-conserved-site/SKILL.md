@@ -29,15 +29,18 @@ On cloud Cowork, stage the exported descriptor files with `device_stage_files` (
 6. Join results by `column`, keeping it as the 0-based machine value and using `oneBased` for display only.
 
 Property vectors, modal fraction, occupancy and geometry inform interpretation; they do not alter the score order or establish a functional site.
-Never read a table whole, and never name a candidate column without having printed its row.
+Conservation may reflect structural maintenance, biological function, or both, and these measurements do not separate those causes automatically.
+Inspect a small bounded TSV in full or use header-based filters for a large column table, and never name a candidate without printing its row.
 
 ## Conditional branches
 
-**No coordinates.** Step 2 does not run; geometry fields are `n/a`, the report names the absent role as the reason, no substitute figure is offered, and the candidate set still ships.
+**No coordinates.** Step 4 does not run; geometry fields are `n/a`, the report names the absent role as the reason, no substitute figure is offered, and the candidate set still ships.
 
 **Gap in the reference.** Keep the conservation observation but exclude that column from the chosen reference's geometry and motif; choose another reference only when it is still an appropriate structure of interest for the query.
 
 **Low occupancy.** Keep and report the observed occupancy without applying a hidden floor.
+
+**Member set limits the signal.** If QC finds length outliers, near-duplicates, gap-rich members, or a conservation ranking that is too weak or too flat to distinguish columns, revisit the member set before changing the column criteria.
 
 ## Submission contract
 

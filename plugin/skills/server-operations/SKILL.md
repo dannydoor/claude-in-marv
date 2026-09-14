@@ -42,6 +42,9 @@ Hand the descriptor and required roles to the downstream skill rather than readi
 
 **Accession-derived motif.** Treat a Q-BioLiP structure-contact-derived binding-site annotation returned through `autoMotif` as a motif candidate, inspect its residues, and require explicit acceptance before the real submission ([input-origins](../references/mcp-contract.md#input-origins)).
 
+**Direct motif.** Use `folddisco_search` directly only for an externally supplied motif or one with no alignment provenance.
+An MSA-derived motif must go through `foldmason-motif-forwarding`, which verifies and forwards the saved column selection.
+
 **Custom structure.** Put it under the shared `imports/` directory and pass its import-relative path; do not invent a device or cloud path ([input-origins](../references/mcp-contract.md#input-origins)).
 
 **FoldMason accession input.** Direct accession loading can expand chains into separate alignment entries, whereas selected hits forwarded through `send_to` can carry an explicitly encoded multichain entry; inspect the completed `msa-entries` roster rather than predicting entry count from accession count ([foldmason-entry-shape](../references/mcp-contract.md#foldmason-entry-shape)).

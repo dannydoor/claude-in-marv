@@ -18,7 +18,7 @@ The summary has no entry roster, so read the chosen name and numeric index from 
 ## Export condition and roles
 
 The default selection-and-forwarding path needs no export.
-Export only for substitution proposals or author numbering, using the roles defined in [roles-and-cardinality](../references/artifact-contract.md#roles-and-cardinality).
+Export only for column-composition evidence or author numbering, using the roles defined in [roles-and-cardinality](../references/artifact-contract.md#roles-and-cardinality).
 On cloud Cowork, stage those exported descriptor files with `device_stage_files` ([cowork-staging](../references/artifact-contract.md#cowork-staging)).
 
 ## Default workflow
@@ -27,7 +27,7 @@ On cloud Cowork, stage those exported descriptor files with `device_stage_files`
 2. Call `select_msa_columns` with `action: "set"` and the numeric index as `entry`; continue only when the returned `entryName` exactly matches the chosen name.
 3. Show the returned motif, residue mapping, gaps, and dropped substitutions; require confirmation when case-sensitive substitutions or gaps matter ([substitution-case](../references/workflow-state.md#substitution-case)).
 4. Call `list_databases({tool: "folddisco"})`, start from the complete compatible set, exclude only databases that do not serve the question, and pass the remaining ids to `send_to`.
-5. Record the destination ticket and frozen `derivedFrom` roster, then hand it to `folddisco-analysis` ([lineage](../references/workflow-state.md#lineage)).
+5. Pass the verified MSA column selection's `name` to `send_to`, record the destination ticket and frozen `derivedFrom` roster, then hand it to `folddisco-analysis` ([lineage](../references/workflow-state.md#lineage)).
 
 ## Conditional branches
 
@@ -52,6 +52,7 @@ Both take `--entry` and `--columns`; author numbering also takes `--structure` (
 ## Claim limits
 
 The forwarded motif is exactly what `select_msa_columns` returns; the analysis never selects a substitution automatically.
+An MSA-derived motif must follow this selection-and-forwarding path rather than being copied into a direct `folddisco_search` call.
 Keep author numbering distinct from alignment labels, and never apply modelled-chain labels to a separately fetched deposit ([MSA metric interpretation](../references/interpretation.md#msa-metric-interpretation), [claim-limits](../references/reporting.md#claim-limits)).
 
 ## Mutation and handoff

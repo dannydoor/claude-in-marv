@@ -31,7 +31,7 @@ On cloud Cowork, stage the exported descriptor files with `device_stage_files` (
 `T` is the exported pattern width, never the largest observed node count.
 Report node count together with offset `T - nodecount`, and divide rates by that database's own row count.
 Interpret IDF, RMSD, retention, match strata, and carrier coherence together ([motif metric interpretation](../references/interpretation.md#motif-metric-interpretation)).
-Never read a table whole, and never cite a row id or motif residue without having printed its row ([TSV query patterns](../references/interpretation.md#tsv-query-patterns)).
+Inspect a small bounded TSV in full or use header-based filters for a large table, and never cite a row id or motif residue without printing its row ([TSV query patterns](../references/interpretation.md#tsv-query-patterns)).
 
 ## Conditional branches
 

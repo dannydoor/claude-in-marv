@@ -22,7 +22,7 @@ On cloud Cowork, every exporting stage uses `device_stage_files` ([cowork-stagin
 ## Default workflow
 
 1. Name the target terminal stage and planned route.
-2. Run each stage through its owner: `server-operations`, `foldseek-hit-analysis`, (`foldseek-phyletic-profile`, if needed,) `foldmason-qc`, `foldmason-conserved-site`, `foldmason-motif-forwarding`, then `folddisco-analysis`.
+2. Run each stage through its owner: `server-operations`, `foldseek-hit-analysis`, `foldmason-qc`, `foldmason-conserved-site`, `foldmason-motif-forwarding`, then `folddisco-analysis`; add `foldseek-phyletic-profile` when the question asks about phyletic distribution or clade breadth and taxonomy is available.
 3. Before continuing, check the next stage's precondition and take the defined stop or evidence-backed revision when needed ([stage-preconditions](../references/orchestration.md#stage-preconditions), [branches](../references/orchestration.md#branches)).
 4. Classify the terminal stage as attempted, not attempted because prerequisites were absent, or failed ([outcomes](../references/orchestration.md#outcomes)).
 5. Write a concise answer and a separate compact Markdown report for the complete chain in the reader's terms ([audience](../references/reporting.md#audience), [report-shape](../references/reporting.md#report-shape)).

@@ -50,5 +50,6 @@ Re-exporting, polling, rereading, correcting an identifier, or fixing malformed 
 ## chain
 
 Fold search → hit analysis → named hit selection → alignment → QC → site analysis → named column selection → motif search → motif analysis; reach is optional and clade breadth is a side branch.
+Run the clade branch when the question asks about phyletic distribution or breadth and the export supplies usable taxonomy.
 After a downstream result, follow its lineage to the relevant source selection, copy and revise that selection, and resume from the affected stage rather than rebuilding unrelated stages.
 Carry result URLs, observations, selection criteria, limits, and each stage outcome into one report without upgrading claims downstream.

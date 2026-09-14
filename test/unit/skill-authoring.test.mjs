@@ -75,3 +75,20 @@ test('every shared reference declares when it should be read', () => {
         assert.match(text, /\*\*Read when:\*\*/, `${file}: missing read condition`);
     }
 });
+
+test('workflow guidance preserves explicit review and forwarding boundaries', () => {
+    const reference = name => fs.readFileSync(path.join(REFS, name), 'utf8');
+    const skill = name => readSkill(name).body;
+
+    assert.match(reference('interpretation.md'), /small bounded TSV may be inspected in full/);
+    assert.match(reference('interpretation.md'), /qLen.*dbLen.*qStartPos.*dbEndPos/);
+    assert.match(reference('interpretation.md'), /structural maintenance, biological function, or both/);
+    assert.match(reference('workflow-state.md'), /rejected.*absent or an empty array/);
+    assert.match(reference('artifact-contract.md'), /occupiedColumns.*gaps/);
+    assert.match(reference('artifact-contract.md'), /modelled sequence positions, not deposited author numbering/);
+
+    assert.match(skill('foldmason-conserved-site'), /revisit the member set before changing the column criteria/);
+    assert.match(skill('foldmason-motif-forwarding'), /selection's `name` to `send_to`/);
+    assert.match(skill('server-operations'), /externally supplied motif or one with no alignment provenance/);
+    assert.match(skill('structural-analysis-workflow'), /phyletic distribution or clade breadth/);
+});

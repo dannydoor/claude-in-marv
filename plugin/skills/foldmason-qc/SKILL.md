@@ -24,7 +24,7 @@ On cloud Cowork, stage the exported descriptor files with `device_stage_files` (
 1. Confirm at least two parsed entries, export, and preflight.
 2. Run `msa/qc` for alignment-wide observations and `msa/member-audit` for member-level observations.
 3. Run `msa/blocks` only when equal-support regions need locations.
-4. Query `members.tsv` and `columns.tsv` with `awk` to locate gap-rich, low-agreement, or low-occupancy entries and to print any member named in a recommendation; never read a table whole ([TSV query patterns](../references/interpretation.md#tsv-query-patterns)).
+4. Inspect a small bounded TSV in full or use header-based `awk` filters for large tables to locate gap-rich, low-agreement, or low-occupancy entries and print any member named in a recommendation ([TSV query patterns](../references/interpretation.md#tsv-query-patterns)).
 5. Interpret the measurements together and state the evidence behind any recommendation ([MSA metric interpretation](../references/interpretation.md#msa-metric-interpretation)).
 
 The outputs cover occupancy spread, conserved-column counts, pairwise identity, member gap fractions, consensus agreement, and blocks with the same observed carrier set.

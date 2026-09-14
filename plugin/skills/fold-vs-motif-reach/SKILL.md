@@ -29,7 +29,7 @@ Only database pairs joined by the internal versioned collection map may be compa
 3. Run `workflow/reach` with the fold artifact as `--artifact-root` and motif artifact as `--against` ([accepted-flags](../references/analysis-cli.md#accepted-flags)).
 4. If lineage crosses intermediate artifacts, provide each explicitly with `--via`; prefer recorded ancestry over `--assert`.
 5. Verify resolved origin pairs, ancestry chain, exact, normalised, ambiguous, fold-only, motif-only, and shared carrier counts; do not treat exit 0 alone as verification.
-6. Query `intersection.tsv` with `awk` by `kind` or `matchLevel` to print the carriers behind any count or example cited; never read the table whole ([TSV query patterns](../references/interpretation.md#tsv-query-patterns)).
+6. Inspect a small bounded `intersection.tsv` in full or use header-based `awk` filters by `kind` or `matchLevel` for a large table, and print the carriers behind any count or example cited ([TSV query patterns](../references/interpretation.md#tsv-query-patterns)).
 
 Identifier grammar, entry-level eligibility, assembly and chain qualifiers, and unparsed identifiers are defined only in [reach vocabulary](../references/interpretation.md#reach-vocabulary).
 

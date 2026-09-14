@@ -23,7 +23,7 @@ On cloud Cowork, stage the exported descriptor files with `device_stage_files` (
 1. Answer count, location, and cap questions from the summary when possible.
 2. Otherwise export, preflight, and choose one analysis: `hit/survey` for database distribution, `hit/table` for leading hits, `hit/coverage` for query-residue coverage, or `hit/member-selection` for alignment candidates.
 3. Report per database; merge only a ranking field the server marks cross-database comparable ([row-order](../references/mcp-contract.md#row-order)).
-4. Query `hits.tsv` or `candidates.tsv` with `awk` to filter by named metrics and to print each hit under consideration; never read a table whole, and never cite a hit id without printing its row first ([TSV query patterns](../references/interpretation.md#tsv-query-patterns)).
+4. Inspect a small bounded TSV in full or use header-based `awk` filters for a large hit table, and print each hit under consideration before citing it ([TSV query patterns](../references/interpretation.md#tsv-query-patterns)).
 5. For a member pool, state the criteria, make an explicit choice from the printed candidates, and hand the chosen row ids to `server-operations`.
 
 ## Conditional branches
@@ -31,12 +31,14 @@ On cloud Cowork, stage the exported descriptor files with `device_stage_files` (
 **Several analyses are genuinely needed.** Run each separately, then combine their high-level insights without listing every available metric.
 
 **A member pool is requested.** The script applies no identity band, coverage floor, taxonomic quota or automatic balance rule.
-Use Foldseek hit `seqId`, coverage, rank, organism, domain context, and description to choose a balanced set explicitly ([hit-set interpretation](../references/interpretation.md#hit-set-interpretation)).
+Use Foldseek hit `seqId`, coverage, query and target lengths, aligned spans, rank, organism, domain context, and description to choose a balanced set explicitly ([hit-set interpretation](../references/interpretation.md#hit-set-interpretation)).
 Avoid a pool made only of near-identical hits, which can make conservation uninformatively uniform, and avoid a pool so divergent that alignment and conserved signal become unreliable.
 Prefer a useful spread around moderately similar hits rather than imposing one universal identity cutoff.
 State the criteria and the chosen row ids; descriptions are source annotations for candidate review, not established functions.
 
 **A complex is analysed.** Keep per-chain coverage distinct from any labelled aggregate.
+
+**Phyletic distribution matters.** When the question asks about clade breadth or lineage distribution and taxonomy is available, also run `foldseek-phyletic-profile`.
 
 ## Submission contract
 

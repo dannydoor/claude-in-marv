@@ -28,6 +28,8 @@ Runs Foldseek, Multimer, FoldMason and Folddisco through the Foldseek MCP server
 
 `foldseek-analyze` reads an exported artifact and writes a deterministic `result.json` and its tables, under the subcommand groups `hit/`, `msa/`, `folddisco/` and `workflow/`.
 It reports observations and candidates without choosing them.
+Hit candidate tables include query and target lengths and aligned spans for domain and partial-alignment review.
+Column composition and per-member residue mapping expose the evidence behind a column choice without proposing a motif automatically.
 The skills require explicit criteria and a named choice before MCP tools save a selection.
 
 ### Upgrading from 1.x

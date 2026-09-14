@@ -24,7 +24,7 @@ On cloud Cowork, stage the exported descriptor files with `device_stage_files` (
 1. Name included and excluded databases before computing clade statistics.
 2. Export, preflight, and run `hit/phyletic` once; add `--taxon <NCBI-tax-id>` when individual hits from one taxon and its descendants are requested.
 3. Report clade counts, fractions, evenness, and identity ranges only over contributing databases, with their row coverage.
-4. Query `clades.tsv` and `taxon-hits.tsv` with `awk` by named fields, for example `distanceToTaxon==0` for exact assignments, and print any hit cited in the answer; never read a table whole ([TSV query patterns](../references/interpretation.md#tsv-query-patterns)).
+4. Inspect a small bounded TSV in full or query a large `clades.tsv` or `taxon-hits.tsv` with header-based `awk`, for example `distanceToTaxon==0` for exact assignments, and print any hit cited in the answer ([TSV query patterns](../references/interpretation.md#tsv-query-patterns)).
 5. For `--taxon`, require `assessmentComplete` before treating an empty table as zero matches over the selected result.
 
 ## Conditional branches

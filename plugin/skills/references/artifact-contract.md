@@ -70,6 +70,11 @@ Saturated counts are lower bounds; FoldDisco saturation is proven while Foldseek
 
 ## file-formats
 
+- `result.json` has the common envelope `analysis`, `analysisVersion`, `version`, `input`, optional `options`, command-specific `summary`, output `files`, and `warnings`; its summary records the bounded findings needed to interpret that run and does not replace the export manifest.
+- `msa-entries` is `{totalEntries, columns, entries[]}` with each entry's `index`, `name`, `residueCount`, and aligned length.
+- Each `msa-residue-map` row names an entry and stores complementary `occupiedColumns` and `gaps` ranges; `tokens` follow occupied columns in modelled-residue order, so the nth expanded occupied column maps to the nth token.
+- Residue-map labels are modelled sequence positions, not deposited author numbering; author numbering requires `msa/author-numbering` against the matching structure.
+- `msa-coordinates` is a gzipped `{totalEntries, entries[]}` document whose entries carry `index`, `name`, and comma-separated Cα xyz triples in modelled-residue order.
 - Multimer chain metrics under `chains[]` differ from top-level metrics.
 - Row and column files are streamed and large data stays off stdout.
 - `msa/compactness` requires `msa-coordinates` and `msa-residue-map`.
