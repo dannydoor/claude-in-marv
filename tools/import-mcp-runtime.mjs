@@ -10,10 +10,10 @@ import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const commonRuntimeFiles = ['LICENSE', 'THIRD_PARTY_NOTICES.md', 'dist/server.mjs', 'package.json'];
-const runtimeLayouts = ['scripts/foldseek-server-mcp.js', 'bin/foldseek-server-mcp.js']
+const runtimeLayouts = ['scripts/marv-mcp.js', 'bin/marv-mcp.js']
     .map(entry => [...commonRuntimeFiles, entry].sort());
 const upstreamRepository = 'https://github.com/soedinglab/MMseqs2-App';
-const launcherSource = path.join(root, 'plugin', 'scripts', 'start-foldseek-server.mjs');
+const launcherSource = path.join(root, 'plugin', 'scripts', 'start-marv-api.mjs');
 
 const fail = message => {
     console.error(`MCP import: ${message}`);
@@ -81,7 +81,7 @@ try {
     }
 
     const runtimePackage = JSON.parse(fs.readFileSync(path.join(runtime, 'package.json'), 'utf8'));
-    assert.equal(runtimePackage.name, 'foldseek-server-mcp', 'unexpected runtime package name');
+    assert.equal(runtimePackage.name, 'marv-mcp', 'unexpected runtime package name');
     assert.match(runtimePackage.version ?? '', /^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/,
         'runtime package needs a semantic version');
     assert.equal(runtimePackage.private, true, 'runtime package must be private and self-contained');
@@ -89,18 +89,18 @@ try {
         assert.equal(upstreamTag, `mcp-v${runtimePackage.version}`,
             'upstream tag must identify the runtime package version');
     }
-    assert.equal(path.basename(artifact), `foldseek-server-plugin-runtime-v${runtimePackage.version}.zip`,
+    assert.equal(path.basename(artifact), `marv-api-runtime-v${runtimePackage.version}.zip`,
         'artifact filename must identify the runtime package version');
 
     const config = {
         mcpServers: {
-            'foldseek-server': {
+            'Marv API': {
                 command: 'node',
-                args: ['${CLAUDE_PLUGIN_ROOT}/scripts/start-foldseek-server.mjs'],
+                args: ['${CLAUDE_PLUGIN_ROOT}/scripts/start-marv-api.mjs'],
                 env: {
-                    FOLDSEEK_SERVER_BASE_URL: '${user_config.base_url}',
-                    FOLDSEEK_SERVER_STATE_DIR: '${CLAUDE_PLUGIN_DATA}/state',
-                    FOLDSEEK_SERVER_SHARED_DIR: '${user_config.shared_dir}',
+                    MARV_BASE_URL: '${user_config.base_url}',
+                    MARV_STATE_DIR: '${CLAUDE_PLUGIN_DATA}/state',
+                    MARV_SHARED_DIR: '${user_config.shared_dir}',
                 },
             },
         },
@@ -109,14 +109,14 @@ try {
         base_url: {
             type: 'string',
             title: 'Server URL',
-            description: 'Foldseek Server deployment used for searches.',
+            description: 'Foldseek Search Server deployment used for searches.',
             required: false,
             default: 'https://search.foldseek.com',
         },
         shared_dir: {
             type: 'directory',
             title: 'Shared folder override',
-            description: 'Optional folder used for exports and uploaded inputs. If empty, a foldseek-server-shared folder under the current user\'s home is used. Grant the active Claude session access before exporting.',
+            description: 'Optional folder used for exports and uploaded inputs. If empty, a marv-shared folder under the current user\'s home is used. Grant the active Claude session access before exporting.',
             required: false,
             default: '',
         },
@@ -139,8 +139,8 @@ try {
     fs.mkdirSync(path.join(stagedPlugin, '.claude-plugin'), { recursive: true });
     fs.mkdirSync(path.join(stagedPlugin, 'scripts'), { recursive: true });
     fs.mkdirSync(path.join(stagedPlugin, 'vendor'), { recursive: true });
-    fs.copyFileSync(launcherSource, path.join(stagedPlugin, 'scripts', 'start-foldseek-server.mjs'));
-    fs.cpSync(runtime, path.join(stagedPlugin, 'vendor', 'foldseek-server'), { recursive: true });
+    fs.copyFileSync(launcherSource, path.join(stagedPlugin, 'scripts', 'start-marv-api.mjs'));
+    fs.cpSync(runtime, path.join(stagedPlugin, 'vendor', 'marv-api'), { recursive: true });
     const writeJson = (file, value) => fs.writeFileSync(file, `${JSON.stringify(value, null, 2)}\n`);
     writeJson(path.join(stagedPlugin, '.claude-plugin', 'plugin.json'), manifest);
     writeJson(path.join(stagedPlugin, '.mcp.json'), config);
@@ -151,12 +151,12 @@ try {
         { encoding: 'utf8' });
     if (check.status !== 0) fail(check.stderr.trim() || check.stdout.trim() || 'staged runtime validation failed');
 
-    fs.rmSync(path.join(plugin, 'vendor', 'foldseek-server'), { recursive: true, force: true });
+    fs.rmSync(path.join(plugin, 'vendor', 'marv-api'), { recursive: true, force: true });
     fs.mkdirSync(path.join(plugin, 'vendor'), { recursive: true });
-    fs.cpSync(path.join(stagedPlugin, 'vendor', 'foldseek-server'),
-        path.join(plugin, 'vendor', 'foldseek-server'), { recursive: true });
+    fs.cpSync(path.join(stagedPlugin, 'vendor', 'marv-api'),
+        path.join(plugin, 'vendor', 'marv-api'), { recursive: true });
     for (const relative of [
-        '.mcp.json', 'mcp-version.json', '.claude-plugin/plugin.json', 'scripts/start-foldseek-server.mjs',
+        '.mcp.json', 'mcp-version.json', '.claude-plugin/plugin.json', 'scripts/start-marv-api.mjs',
     ]) {
         fs.mkdirSync(path.dirname(path.join(plugin, relative)), { recursive: true });
         fs.copyFileSync(path.join(stagedPlugin, relative), path.join(plugin, relative));

@@ -41,7 +41,7 @@ git status --short
 npm ci --prefix mcp/core
 npm ci --prefix mcp/server
 npm run build:plugin-runtime --prefix mcp/server
-sha256sum mcp/server/dist/foldseek-server-plugin-runtime-v<version>.zip
+sha256sum mcp/server/dist/marv-api-runtime-v<version>.zip
 git rev-parse HEAD
 ```
 
@@ -50,7 +50,7 @@ In this repository, import the verified ZIP and bind it to the full commit witho
 
 ```bash
 npm run import:mcp -- \
-  --artifact /path/to/foldseek-server-plugin-runtime-v<version>.zip \
+  --artifact /path/to/marv-api-runtime-v<version>.zip \
   --sha256 <artifact-sha256> \
   --source-kind local-build \
   --upstream-commit <full-commit>
@@ -69,7 +69,7 @@ It contains exactly the entry point, a `server.mjs` with the MCP SDK and all oth
 This keeps SDK examples, types, and an installed `node_modules` tree out of the plugin payload without dropping dependency attribution.
 The repository adds only `mcpb/manifest.json` and `mcpb/README.md` when packaging the separate Desktop artifact.
 
-The importer changes `.mcp.json`, `mcp-version.json`, the MCP settings in the plugin manifest and the exact five files under `vendor/foldseek-server/` as one reviewed change.
+The importer changes `.mcp.json`, `mcp-version.json`, the MCP settings in the plugin manifest and the exact five files under `vendor/marv-api/` as one reviewed change.
 `GITHUB_REPOSITORY=OWNER/REPOSITORY npm run sync:mcp-metadata` then aligns the MCPB manifest version and the repository-specific README download and compatibility text.
 
 ## Manual plugin release
@@ -81,8 +81,8 @@ npm test
 npm run check
 claude plugin validate ./plugin
 npm run package:all
-sha256sum dist/foldseek-server-v<cur_version>.plugin
-sha256sum dist/foldseek-server-v<mcp_version>.mcpb
+sha256sum dist/claude-in-marv-v<cur_version>.plugin
+sha256sum dist/marv-api-v<mcp_version>.mcpb
 ```
 
 Each packager checks the archived member list and compares every member with its reviewed source.

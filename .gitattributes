@@ -4,4 +4,4 @@
 *.plugin binary
 *.zip binary
 
-plugin/vendor/foldseek-server/dist/server.mjs linguist-generated=true -whitespace
+plugin/vendor/marv-api/dist/server.mjs linguist-generated=true -whitespace

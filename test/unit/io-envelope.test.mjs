@@ -25,7 +25,7 @@ test('run.json records provenance and excludes the host tool prefix', () => {
     const run = buildRun({
         analysis: 'hit/table',
         analysisVersion: ANALYSIS_VERSION,
-        tool: 'mcp__some-host__Foldseek_Server__foldseek_search',
+        tool: 'mcp__some-host__Marv_API__foldseek_search',
         serverNamespace: 'https://search.foldseek.com/api',
         input: INPUT,
         roles: ['rows', 'taxonomy'],

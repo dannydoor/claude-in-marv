@@ -1,23 +1,23 @@
 {
-  "name": "foldseek-server-mcp",
-  "version": "0.1.1",
+  "name": "marv-mcp",
+  "version": "0.2.0",
   "source": {
-    "kind": "source-build"
+    "kind": "local-build"
   },
   "upstream": {
     "repository": "https://github.com/soedinglab/MMseqs2-App",
-    "tag": "mcp-v0.1.1",
+    "tag": null,
     "commit": "83be825b4fcda6fd37d73223da758e8d0cdf31ce"
   },
   "artifact": {
-    "name": "foldseek-server-plugin-runtime-v0.1.1.zip",
-    "sha256": "b970aa017f26779930b2ec6d564bf1f6572b5f4fac6a4bbbc8566fe339198e8a"
+    "name": "marv-api-runtime-v0.2.0.zip",
+    "sha256": "66d38b8820f1a7c446eb813182ff1636f9a7635029a3523e4769bde96a88fe42"
   },
   "files": {
     "LICENSE": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903",
     "THIRD_PARTY_NOTICES.md": "11a79806dc48f2bb9e67b0fbfadea2ebe6556bcb1623e2e9a1e7efcaeb4b9c4e",
-    "dist/server.mjs": "d4c7999c4d5b2c1fe8672400dc62a3fa6419190332d3058dc34de5cd6853e157",
-    "package.json": "81ffde29a91e85c46c53a4f5c68a342ad5c1c9371b6960154b62834cb8686123",
-    "scripts/foldseek-server-mcp.js": "bb49537de70e4f09380213a4057595141c90012bc28d0fdfc3a911dcbe09fd27"
+    "dist/server.mjs": "d930ebdb8ab1ef0099291eebe411e48e80434d1e56f9d0b179c412b5c7449899",
+    "package.json": "1e0d354d6865ced0d225ae5044f6738c63145aa52bc9c5774688e6400ed0b7c1",
+    "scripts/marv-mcp.js": "a18fa4d991535643efd522e4e001b8bb9f66a988456f2d34db177d38e122750a"
   }
 }

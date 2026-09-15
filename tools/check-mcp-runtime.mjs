@@ -15,15 +15,15 @@ if (pluginArg !== -1 && !process.argv[pluginArg + 1]) {
 }
 const configPath = path.join(plugin, '.mcp.json');
 const provenancePath = path.join(plugin, 'mcp-version.json');
-const launcherPath = path.join(plugin, 'scripts', 'start-foldseek-server.mjs');
-const runtimeRoot = path.join(plugin, 'vendor', 'foldseek-server');
+const launcherPath = path.join(plugin, 'scripts', 'start-marv-api.mjs');
+const runtimeRoot = path.join(plugin, 'vendor', 'marv-api');
 const manifestPath = path.join(plugin, '.claude-plugin', 'plugin.json');
 const manifest = fs.existsSync(manifestPath) ? JSON.parse(fs.readFileSync(manifestPath, 'utf8')) : {};
 const required = process.argv.includes('--required');
 const present = [configPath, provenancePath, launcherPath, runtimeRoot]
     .map(fs.existsSync).concat(manifest.userConfig !== undefined);
 const commonRuntimeFiles = ['LICENSE', 'THIRD_PARTY_NOTICES.md', 'dist/server.mjs', 'package.json'];
-const runtimeLayouts = ['scripts/foldseek-server-mcp.js', 'bin/foldseek-server-mcp.js']
+const runtimeLayouts = ['scripts/marv-mcp.js', 'bin/marv-mcp.js']
     .map(entry => [...commonRuntimeFiles, entry].sort());
 
 const fail = (message) => {
@@ -38,37 +38,37 @@ if (present.every((value) => !value)) {
 }
 
 assert.ok(present.every(Boolean),
-    'bundle .mcp.json, launcher, mcp-version.json, plugin userConfig and vendor/foldseek-server atomically');
+    'bundle .mcp.json, launcher, mcp-version.json, plugin userConfig and vendor/marv-api atomically');
 
 const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
-const server = config.mcpServers?.['foldseek-server'];
-assert.ok(server, '.mcp.json must declare mcpServers.foldseek-server');
+const server = config.mcpServers?.['Marv API'];
+assert.ok(server, '.mcp.json must declare mcpServers["Marv API"]');
 assert.equal(server.command, 'node', 'bundled server command must be node');
 assert.deepEqual(
     server.args,
-    ['${CLAUDE_PLUGIN_ROOT}/scripts/start-foldseek-server.mjs'],
+    ['${CLAUDE_PLUGIN_ROOT}/scripts/start-marv-api.mjs'],
     'bundled server must run through the plugin launcher',
 );
 assert.deepEqual(server.env, {
-    FOLDSEEK_SERVER_BASE_URL: '${user_config.base_url}',
-    FOLDSEEK_SERVER_STATE_DIR: '${CLAUDE_PLUGIN_DATA}/state',
-    FOLDSEEK_SERVER_SHARED_DIR: '${user_config.shared_dir}',
+    MARV_BASE_URL: '${user_config.base_url}',
+    MARV_STATE_DIR: '${CLAUDE_PLUGIN_DATA}/state',
+    MARV_SHARED_DIR: '${user_config.shared_dir}',
 }, 'bundled server environment must use plugin configuration and persistent plugin data');
 assert.deepEqual(manifest.userConfig, {
     base_url: {
         type: 'string', title: 'Server URL',
-        description: 'Foldseek Server deployment used for searches.',
+        description: 'Foldseek Search Server deployment used for searches.',
         required: false, default: 'https://search.foldseek.com',
     },
     shared_dir: {
         type: 'directory', title: 'Shared folder override',
-        description: 'Optional folder used for exports and uploaded inputs. If empty, a foldseek-server-shared folder under the current user\'s home is used. Grant the active Claude session access before exporting.',
+        description: 'Optional folder used for exports and uploaded inputs. If empty, a marv-shared folder under the current user\'s home is used. Grant the active Claude session access before exporting.',
         required: false, default: '',
     },
 }, 'plugin userConfig must expose the two supported MCP settings');
 
 const provenance = JSON.parse(fs.readFileSync(provenancePath, 'utf8'));
-assert.equal(provenance.name, 'foldseek-server-mcp', 'unexpected bundled server name');
+assert.equal(provenance.name, 'marv-mcp', 'unexpected bundled server name');
 assert.match(provenance.version, /^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/, 'invalid bundled server version');
 assert.ok(['local-build', 'source-build', 'release'].includes(provenance.source?.kind),
     'runtime source kind must be local-build, source-build or release');
@@ -81,7 +81,7 @@ if (['source-build', 'release'].includes(provenance.source.kind)) {
 }
 assert.match(provenance.upstream?.commit ?? '', /^[0-9a-f]{40}$/, 'upstream commit must be a full Git hash');
 assert.match(provenance.artifact?.sha256 ?? '', /^[0-9a-f]{64}$/, 'artifact SHA-256 is required');
-assert.equal(provenance.artifact?.name, `foldseek-server-plugin-runtime-v${provenance.version}.zip`,
+assert.equal(provenance.artifact?.name, `marv-api-runtime-v${provenance.version}.zip`,
     'artifact filename must match the runtime version');
 
 const walk = (dir) => fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {

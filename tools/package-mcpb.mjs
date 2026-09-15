@@ -8,16 +8,16 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const runtimeRoot = path.join(root, 'plugin', 'vendor', 'foldseek-server');
+const runtimeRoot = path.join(root, 'plugin', 'vendor', 'marv-api');
 const provenance = JSON.parse(await fs.readFile(path.join(root, 'plugin', 'mcp-version.json'), 'utf8'));
-const out = path.resolve(process.argv[2] ?? path.join(root, 'dist', `foldseek-server-v${provenance.version}.mcpb`));
+const out = path.resolve(process.argv[2] ?? path.join(root, 'dist', `marv-api-v${provenance.version}.mcpb`));
 const runtimeFiles = Object.keys(provenance.files ?? {}).sort();
 const extensionFiles = ['README.md', 'manifest.json'];
 const expected = [...runtimeFiles, ...extensionFiles].sort();
 
 execFileSync(process.execPath, [path.join(root, 'tools', 'check-mcpb.mjs')], { stdio: 'inherit' });
 
-const temporary = await fs.mkdtemp(path.join(os.tmpdir(), 'foldseek-server-mcpb-'));
+const temporary = await fs.mkdtemp(path.join(os.tmpdir(), 'marv-api-mcpb-'));
 try {
     const stage = path.join(temporary, 'extension');
     await fs.mkdir(stage);

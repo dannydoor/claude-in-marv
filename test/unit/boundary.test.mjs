@@ -84,20 +84,20 @@ test('the MCP payload admits configuration, launcher and the reviewed runtime on
     for (const relative of [
         '.mcp.json',
         'mcp-version.json',
-        'scripts/start-foldseek-server.mjs',
-        'vendor/foldseek-server/LICENSE',
-        'vendor/foldseek-server/THIRD_PARTY_NOTICES.md',
-        'vendor/foldseek-server/scripts/foldseek-server-mcp.js',
-        'vendor/foldseek-server/dist/server.mjs',
-        'vendor/foldseek-server/package.json',
+        'scripts/start-marv-api.mjs',
+        'vendor/marv-api/LICENSE',
+        'vendor/marv-api/THIRD_PARTY_NOTICES.md',
+        'vendor/marv-api/scripts/marv-mcp.js',
+        'vendor/marv-api/dist/server.mjs',
+        'vendor/marv-api/package.json',
     ]) {
         assert.ok(SHIP.some(rule => rule.test(relative)), relative);
     }
     for (const relative of [
-        'vendor/foldseek-server/src/server.js',
-        'vendor/foldseek-server/test/runtime.test.js',
-        'vendor/foldseek-server/node_modules/sdk/index.js',
-        'vendor/foldseek-server/README.md',
+        'vendor/marv-api/src/server.js',
+        'vendor/marv-api/test/runtime.test.js',
+        'vendor/marv-api/node_modules/sdk/index.js',
+        'vendor/marv-api/README.md',
     ]) {
         assert.equal(SHIP.some(rule => rule.test(relative)), false, relative);
     }

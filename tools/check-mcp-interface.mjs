@@ -18,8 +18,8 @@ const plugin = valueAfter('--plugin-dir', path.join(root, 'plugin'));
 const contractPath = valueAfter('--contract', path.join(root, 'test', 'contract', 'mcp-interface.json'));
 const required = process.argv.includes('--required');
 const entry = [
-    path.join(plugin, 'vendor', 'foldseek-server', 'scripts', 'foldseek-server-mcp.js'),
-    path.join(plugin, 'vendor', 'foldseek-server', 'bin', 'foldseek-server-mcp.js'),
+    path.join(plugin, 'vendor', 'marv-api', 'scripts', 'marv-mcp.js'),
+    path.join(plugin, 'vendor', 'marv-api', 'bin', 'marv-mcp.js'),
 ].find(fs.existsSync);
 
 const fail = message => {
@@ -50,9 +50,9 @@ async function toolsFromRuntime() {
     const shared = path.join(state, 'shared');
     const env = {
         ...process.env,
-        FOLDSEEK_SERVER_BASE_URL: 'http://127.0.0.1:9',
-        FOLDSEEK_SERVER_STATE_DIR: state,
-        FOLDSEEK_SERVER_SHARED_DIR: shared,
+        MARV_BASE_URL: 'http://127.0.0.1:9',
+        MARV_STATE_DIR: state,
+        MARV_SHARED_DIR: shared,
     };
     const child = spawn(process.execPath, [entry], {
         env,

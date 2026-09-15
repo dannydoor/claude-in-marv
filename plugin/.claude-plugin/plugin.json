@@ -1,7 +1,7 @@
 {
-  "name": "foldseek-server",
-  "version": "2.0.0",
-  "description": "Search, align and analyze protein structures with Foldseek, FoldMason and FoldDisco",
+  "name": "claude-in-marv",
+  "version": "2.1.0",
+  "description": "Analyze protein structures with Steinegger Lab tools.",
   "author": {
     "name": "Steinegger Lab"
   },
@@ -21,14 +21,14 @@
     "base_url": {
       "type": "string",
       "title": "Server URL",
-      "description": "Foldseek Server deployment used for searches.",
+      "description": "Foldseek Search Server deployment used for searches.",
       "required": false,
       "default": "https://search.foldseek.com"
     },
     "shared_dir": {
       "type": "directory",
       "title": "Shared folder override",
-      "description": "Optional folder used for exports and uploaded inputs. If empty, a foldseek-server-shared folder under the current user's home is used. Grant the active Claude session access before exporting.",
+      "description": "Optional folder used for exports and uploaded inputs. If empty, a marv-shared folder under the current user's home is used. Grant the active Claude session access before exporting.",
       "required": false,
       "default": ""
     }

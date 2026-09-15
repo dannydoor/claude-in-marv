@@ -8,19 +8,19 @@ import { fileURLToPath } from 'node:url';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '../..');
-const SOURCE = path.join(ROOT, 'plugin', 'scripts', 'start-foldseek-server.mjs');
+const SOURCE = path.join(ROOT, 'plugin', 'scripts', 'start-marv-api.mjs');
 
 function stagedLauncher(layout = 'scripts') {
     const root = fs.mkdtempSync(path.join(os.tmpdir(), 'foldseek-mcp-launcher-'));
-    const launcher = path.join(root, 'scripts', 'start-foldseek-server.mjs');
-    const entry = path.join(root, 'vendor', 'foldseek-server', layout, 'foldseek-server-mcp.js');
+    const launcher = path.join(root, 'scripts', 'start-marv-api.mjs');
+    const entry = path.join(root, 'vendor', 'marv-api', layout, 'marv-mcp.js');
     fs.mkdirSync(path.dirname(launcher), { recursive: true });
     fs.mkdirSync(path.dirname(entry), { recursive: true });
     fs.copyFileSync(SOURCE, launcher);
     fs.writeFileSync(entry, [
         "process.stdout.write(JSON.stringify({",
-        "  baseUrl: process.env.FOLDSEEK_SERVER_BASE_URL,",
-        "  sharedDir: process.env.FOLDSEEK_SERVER_SHARED_DIR,",
+        "  baseUrl: process.env.MARV_BASE_URL,",
+        "  sharedDir: process.env.MARV_SHARED_DIR,",
         "}));",
         '',
     ].join('\n'));
@@ -40,12 +40,12 @@ test('the launcher supplies portable defaults when plugin settings are empty', (
     const actual = run(launcher, {
         ...process.env,
         HOME: home,
-        FOLDSEEK_SERVER_BASE_URL: '',
-        FOLDSEEK_SERVER_SHARED_DIR: '',
+        MARV_BASE_URL: '',
+        MARV_SHARED_DIR: '',
     });
     assert.deepEqual(actual, {
         baseUrl: 'https://search.foldseek.com',
-        sharedDir: path.join(home, 'foldseek-server-shared'),
+        sharedDir: path.join(home, 'marv-shared'),
     });
 });
 
@@ -54,8 +54,8 @@ test('the launcher preserves configured values with the legacy runtime layout', 
     const sharedDir = path.join(root, 'chosen');
     const actual = run(launcher, {
         ...process.env,
-        FOLDSEEK_SERVER_BASE_URL: 'https://foldseek.example.test',
-        FOLDSEEK_SERVER_SHARED_DIR: sharedDir,
+        MARV_BASE_URL: 'https://foldseek.example.test',
+        MARV_SHARED_DIR: sharedDir,
     });
     assert.deepEqual(actual, {
         baseUrl: 'https://foldseek.example.test',

@@ -1,0 +1,14 @@
+{
+  "name": "marv-mcp",
+  "version": "0.2.0",
+  "private": true,
+  "description": "Run Steinegger Lab tools, chain them, and produce inspectable result artifacts.",
+  "license": "GPL-3.0-or-later",
+  "type": "module",
+  "bin": {
+    "marv-mcp": "scripts/marv-mcp.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

@@ -80,7 +80,7 @@ jobs:
           npm ci --prefix "$SOURCE_ROOT/mcp/core"
           npm ci --prefix "$SOURCE_ROOT/mcp/server"
           npm run build:plugin-runtime --prefix "$SOURCE_ROOT/mcp/server"
-          artifact="$SOURCE_ROOT/mcp/server/dist/foldseek-server-plugin-runtime-v${VERSION}.zip"
+          artifact="$SOURCE_ROOT/mcp/server/dist/marv-api-runtime-v${VERSION}.zip"
           [ -f "$artifact" ] || { echo "runtime artifact was not built" >&2; exit 1; }
           sha=$(sha256sum "$artifact" | cut -d ' ' -f 1)
           echo "path=$artifact" >> "$GITHUB_OUTPUT"

@@ -1,14 +1,14 @@
 {
   "mcpServers": {
-    "foldseek-server": {
+    "Marv API": {
       "command": "node",
       "args": [
-        "${CLAUDE_PLUGIN_ROOT}/scripts/start-foldseek-server.mjs"
+        "${CLAUDE_PLUGIN_ROOT}/scripts/start-marv-api.mjs"
       ],
       "env": {
-        "FOLDSEEK_SERVER_BASE_URL": "${user_config.base_url}",
-        "FOLDSEEK_SERVER_STATE_DIR": "${CLAUDE_PLUGIN_DATA}/state",
-        "FOLDSEEK_SERVER_SHARED_DIR": "${user_config.shared_dir}"
+        "MARV_BASE_URL": "${user_config.base_url}",
+        "MARV_STATE_DIR": "${CLAUDE_PLUGIN_DATA}/state",
+        "MARV_SHARED_DIR": "${user_config.shared_dir}"
       }
     }
   }

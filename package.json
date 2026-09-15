@@ -1,7 +1,7 @@
 {
   "name": "foldseek-mcp-plugin",
   "private": true,
-  "description": "Source, tests and packaging for the Foldseek Server Claude plugin.",
+  "description": "Source, tests and packaging for the claude-in-marv Claude plugin.",
   "license": "GPL-3.0-or-later",
   "engines": {
     "node": ">=18"

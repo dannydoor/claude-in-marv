@@ -53,7 +53,7 @@ done
 
 [[ "${1:-}" != "--check-only" ]] || exit 0
 
-BUILD_ROOT=$(mktemp -d "${TMPDIR:-/tmp}/foldseek-plugin.XXXXXX")
+BUILD_ROOT=$(mktemp -d "${TMPDIR:-/tmp}/marv-plugin.XXXXXX")
 trap 'rm -rf "$BUILD_ROOT"' EXIT
 STAGE="$BUILD_ROOT/plugin"
 TMP_OUT="$BUILD_ROOT/$(basename "$OUT")"

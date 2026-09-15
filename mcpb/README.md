@@ -1,13 +1,13 @@
-# Foldseek Server desktop extension
+# Marv API desktop extension
 
 Use Foldseek for monomer and complex structure searches, FoldMason for multiple-structure alignment and FoldDisco for 3D motif searches through Claude Desktop.
 
 ## Installation
 
 In Claude Desktop, open **Settings → Extensions → Advanced settings → Install Extension…** and select this `.mcpb` file.
-The public Foldseek Server and `~/foldseek-server-shared` are the defaults; either can be changed during installation.
+The public Foldseek Search Server and `~/marv-shared` are the defaults; either can be changed during installation.
 
-Install the matching Foldseek Server Claude plugin to add guided analysis skills and local analysis commands.
+Install the matching claude-in-marv Claude plugin to add guided analysis skills and local analysis commands.
 Cowork requires this Desktop extension because its cloud session does not run the MCP server bundled with the plugin.
 
 ## Shared files

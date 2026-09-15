@@ -47,7 +47,7 @@ jobs:
           version=$(node -p "require('./plugin/.claude-plugin/plugin.json').version")
           mcp_version=$(node -p "require('./plugin/mcp-version.json').version")
           plugin_archive="${name}-v${version}.plugin"
-          mcpb="foldseek-server-v${mcp_version}.mcpb"
+          mcpb="marv-api-v${mcp_version}.mcpb"
           npm run package:all
           cd dist
           sha256sum "$plugin_archive" > "$plugin_archive.sha256"
@@ -95,6 +95,6 @@ jobs:
             echo "$TAG already carries content-identical immutable assets"
           else
             gh release create "$TAG" "$PLUGIN" "$PLUGIN_CHECKSUM" "$MCPB" "$MCPB_CHECKSUM" --verify-tag \
-              --title "Foldseek Server plugin $TAG" \
+              --title "claude-in-marv $TAG" \
               --notes "Claude plugin and matching Desktop MCPB built from the same pinned Foldseek MCP runtime. See the bundled CHANGELOG for requirements and upgrade notes."
           fi

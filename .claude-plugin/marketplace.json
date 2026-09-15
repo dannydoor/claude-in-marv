@@ -1,17 +1,17 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-marketplace.json",
-  "name": "foldseek-server-tools",
+  "name": "steinegger-lab",
   "owner": {
     "name": "Steinegger Lab"
   },
   "metadata": {
-    "description": "Claude plugins for protein structure analysis"
+    "description": "Claude plugins for protein structure analysis with Steinegger Lab tools"
   },
   "plugins": [
     {
-      "name": "foldseek-server",
+      "name": "claude-in-marv",
       "source": "./plugin",
-      "description": "Run Foldseek, Foldseek-Multimer, FoldMason and Folddisco and analyze.",
+      "description": "Analyze protein structures with Steinegger Lab tools.",
       "author": {
         "name": "Steinegger Lab"
       }

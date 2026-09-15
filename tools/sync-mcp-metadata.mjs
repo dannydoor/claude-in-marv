@@ -20,12 +20,12 @@ export function syncMcpMetadata({ repositoryRoot, repository }) {
 
     const readmePath = path.join(repositoryRoot, 'README.md');
     let readme = fs.readFileSync(readmePath, 'utf8');
-    const download = /\[Download `foldseek-server-v[^`]+\.mcpb`\]\(https:\/\/github\.com\/[^/\s]+\/[^/\s]+\/releases\/download\/v[^/]+\/foldseek-server-v[^)]+\.mcpb\)/;
+    const download = /\[Download `marv-api-v[^`]+\.mcpb`\]\(https:\/\/github\.com\/[^/\s]+\/[^/\s]+\/releases\/download\/v[^/]+\/marv-api-v[^)]+\.mcpb\)/;
     const compatibility = /^Plugin \S+ requires MCPB \S+\.$/m;
     assert.match(readme, download, 'README MCPB download link was not found');
     assert.match(readme, compatibility, 'README plugin/MCPB compatibility sentence was not found');
     readme = readme.replace(download,
-        `[Download \`foldseek-server-v${runtime.version}.mcpb\`](https://github.com/${repository}/releases/download/v${plugin.version}/foldseek-server-v${runtime.version}.mcpb)`);
+        `[Download \`marv-api-v${runtime.version}.mcpb\`](https://github.com/${repository}/releases/download/v${plugin.version}/marv-api-v${runtime.version}.mcpb)`);
     readme = readme.replace(compatibility, `Plugin ${plugin.version} requires MCPB ${runtime.version}.`);
     fs.writeFileSync(readmePath, readme);
     return { pluginVersion: plugin.version, runtimeVersion: runtime.version };

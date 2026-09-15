@@ -40,7 +40,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: matrix.node-version == 22
         with:
-          name: foldseek-server-release-candidates
+          name: claude-in-marv-release-candidates
           path: |
             dist/*.plugin
             dist/*.mcpb

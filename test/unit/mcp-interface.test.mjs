@@ -12,9 +12,9 @@ const CHECK = path.join(ROOT, 'tools', 'check-mcp-interface.mjs');
 function fixture(layout = 'bin') {
     const root = fs.mkdtempSync(path.join(os.tmpdir(), 'foldseek-interface-test-'));
     const plugin = path.join(root, 'plugin');
-    const entryDir = path.join(plugin, 'vendor', 'foldseek-server', layout);
+    const entryDir = path.join(plugin, 'vendor', 'marv-api', layout);
     fs.mkdirSync(entryDir, { recursive: true });
-    fs.writeFileSync(path.join(entryDir, 'foldseek-server-mcp.js'), `
+    fs.writeFileSync(path.join(entryDir, 'marv-mcp.js'), `
 const readline = require('node:readline');
 const lines = readline.createInterface({ input: process.stdin });
 lines.on('line', line => {
@@ -32,7 +32,7 @@ lines.on('line', line => {
     }
     if (message.method === 'tools/call' && message.params.name === 'get_shared_dir') {
         const path = require('node:path');
-        const shared = process.env.FOLDSEEK_SERVER_SHARED_DIR;
+        const shared = process.env.MARV_SHARED_DIR;
         const described = {
             localPath: shared,
             mountName: path.basename(shared),

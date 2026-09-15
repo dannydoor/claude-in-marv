@@ -9,7 +9,7 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const CHECK = path.join(ROOT, 'tools', 'check-mcp-runtime.mjs');
-const LAUNCHER = path.join(ROOT, 'plugin', 'scripts', 'start-foldseek-server.mjs');
+const LAUNCHER = path.join(ROOT, 'plugin', 'scripts', 'start-marv-api.mjs');
 const PLUGIN_VERSION = '7.8.9';
 const MCP_VERSION = '4.5.6';
 const run = (plugin, ...args) => spawnSync(process.execPath,
@@ -18,41 +18,41 @@ const digest = (file) => crypto.createHash('sha256').update(fs.readFileSync(file
 
 function stageRuntime() {
     const plugin = fs.mkdtempSync(path.join(os.tmpdir(), 'foldseek-plugin-runtime-'));
-    const runtime = path.join(plugin, 'vendor', 'foldseek-server');
+    const runtime = path.join(plugin, 'vendor', 'marv-api');
     for (const directory of ['scripts', 'dist']) fs.mkdirSync(path.join(runtime, directory), { recursive: true });
     fs.mkdirSync(path.join(plugin, '.claude-plugin'));
     fs.mkdirSync(path.join(plugin, 'scripts'));
 
     fs.writeFileSync(path.join(runtime, 'LICENSE'), 'GPL-3.0-or-later\n');
     fs.writeFileSync(path.join(runtime, 'THIRD_PARTY_NOTICES.md'), '# Third-party notices\n');
-    fs.writeFileSync(path.join(runtime, 'scripts', 'foldseek-server-mcp.js'), '#!/usr/bin/env node\n');
+    fs.writeFileSync(path.join(runtime, 'scripts', 'marv-mcp.js'), '#!/usr/bin/env node\n');
     fs.writeFileSync(path.join(runtime, 'dist', 'server.mjs'),
         "import fs from 'node:fs';\nexport const available = Boolean(fs);\n");
     fs.writeFileSync(path.join(runtime, 'package.json'), JSON.stringify({
-        name: 'foldseek-server-mcp', version: MCP_VERSION, private: true, type: 'module',
+        name: 'marv-mcp', version: MCP_VERSION, private: true, type: 'module',
     }));
-    fs.copyFileSync(LAUNCHER, path.join(plugin, 'scripts', 'start-foldseek-server.mjs'));
+    fs.copyFileSync(LAUNCHER, path.join(plugin, 'scripts', 'start-marv-api.mjs'));
     fs.writeFileSync(path.join(plugin, '.mcp.json'), JSON.stringify({ mcpServers: {
-        'foldseek-server': {
+        'Marv API': {
             command: 'node',
-            args: ['${CLAUDE_PLUGIN_ROOT}/scripts/start-foldseek-server.mjs'],
+            args: ['${CLAUDE_PLUGIN_ROOT}/scripts/start-marv-api.mjs'],
             env: {
-                FOLDSEEK_SERVER_BASE_URL: '${user_config.base_url}',
-                FOLDSEEK_SERVER_STATE_DIR: '${CLAUDE_PLUGIN_DATA}/state',
-                FOLDSEEK_SERVER_SHARED_DIR: '${user_config.shared_dir}',
+                MARV_BASE_URL: '${user_config.base_url}',
+                MARV_STATE_DIR: '${CLAUDE_PLUGIN_DATA}/state',
+                MARV_SHARED_DIR: '${user_config.shared_dir}',
             },
         },
     } }));
     fs.writeFileSync(path.join(plugin, '.claude-plugin', 'plugin.json'), JSON.stringify({
-        name: 'foldseek-server', version: PLUGIN_VERSION, userConfig: {
+        name: 'claude-in-marv', version: PLUGIN_VERSION, userConfig: {
             base_url: {
                 type: 'string', title: 'Server URL',
-                description: 'Foldseek Server deployment used for searches.',
+                description: 'Foldseek Search Server deployment used for searches.',
                 required: false, default: 'https://search.foldseek.com',
             },
             shared_dir: {
                 type: 'directory', title: 'Shared folder override',
-                description: 'Optional folder used for exports and uploaded inputs. If empty, a foldseek-server-shared folder under the current user\'s home is used. Grant the active Claude session access before exporting.',
+                description: 'Optional folder used for exports and uploaded inputs. If empty, a marv-shared folder under the current user\'s home is used. Grant the active Claude session access before exporting.',
                 required: false, default: '',
             },
         },
@@ -60,11 +60,11 @@ function stageRuntime() {
 
     const updateProvenance = () => {
         const files = {};
-        for (const relative of ['LICENSE', 'THIRD_PARTY_NOTICES.md', 'scripts/foldseek-server-mcp.js', 'dist/server.mjs', 'package.json']) {
+        for (const relative of ['LICENSE', 'THIRD_PARTY_NOTICES.md', 'scripts/marv-mcp.js', 'dist/server.mjs', 'package.json']) {
             files[relative] = digest(path.join(runtime, relative));
         }
         fs.writeFileSync(path.join(plugin, 'mcp-version.json'), JSON.stringify({
-            name: 'foldseek-server-mcp',
+            name: 'marv-mcp',
             version: MCP_VERSION,
             source: { kind: 'local-build' },
             upstream: {
@@ -72,7 +72,7 @@ function stageRuntime() {
                 tag: null,
                 commit: 'a'.repeat(40),
             },
-            artifact: { name: `foldseek-server-plugin-runtime-v${MCP_VERSION}.zip`, sha256: 'b'.repeat(64) },
+            artifact: { name: `marv-api-runtime-v${MCP_VERSION}.zip`, sha256: 'b'.repeat(64) },
             files,
         }));
     };

@@ -1,5 +1,30 @@
 # Changelog
 
+## 2.1.0 — 2026-09-15
+
+Renamed. The plugin is `claude-in-marv`, published from the `steinegger-lab` marketplace, and the
+server it bundles is `Marv API`. The nine skills, the analysis CLI and the workflows are unchanged.
+
+### Requires
+
+- MCP runtime 0.2.0. Claude Code uses the pinned runtime bundled here; Cowork requires the matching
+  Desktop MCPB.
+- The server writes to `marv-shared` under the current user's home unless overridden.
+
+### Changed
+
+- **Breaking.** Install as `claude-in-marv@steinegger-lab`, not
+  `foldseek-server@foldseek-server-tools`. Claude treats the renamed plugin as a different plugin:
+  remove the old one, install this one, and start a fresh session.
+- **Breaking.** The bundled server declares itself `Marv API`, so its tools are namespaced
+  `Marv_API` instead of `Foldseek_Server`. Anything that named the old prefix must be updated.
+- **Breaking.** Server configuration is `MARV_*` instead of `FOLDSEEK_SERVER_*`; the state directory
+  is a `.marv` folder and the shared folder is `marv-shared`, both under the current user's home.
+  Results, selections and exports cached under the old paths are neither read nor migrated.
+- Release files are `claude-in-marv-v2.1.0.plugin` and `marv-api-v0.2.0.mcpb`.
+- The `Server URL` setting now reads "Foldseek Search Server": it names the upstream deployment
+  being searched, not the server this plugin bundles.
+
 ## 2.0.0 — 2026-09-08
 
 Runs Foldseek, Multimer, FoldMason and Folddisco through the Foldseek MCP server, and analyses exported results with a local CLI.
@@ -8,7 +33,7 @@ Runs Foldseek, Multimer, FoldMason and Folddisco through the Foldseek MCP server
 
 - Claude Code uses the pinned MCP runtime bundled here.
   Cowork requires the server version in `mcp-version.json` as a separate Desktop MCPB.
-- The server writes to `foldseek-server-shared` under the current user's home unless overridden.
+- The server writes to `marv-shared` under the current user's home unless overridden.
 
 ### Nine skills
 

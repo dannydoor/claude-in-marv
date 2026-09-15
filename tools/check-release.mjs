@@ -29,8 +29,8 @@ export function releaseMetadataErrors({ repositoryRoot, tag, repository }) {
     const provenance = JSON.parse(fs.readFileSync(path.join(repositoryRoot, 'plugin', 'mcp-version.json'), 'utf8'));
     for (const command of [
         `/plugin marketplace add ${repository}`,
-        '/plugin install foldseek-server@foldseek-server-tools',
-        `https://github.com/${repository}/releases/download/v${manifest.version}/foldseek-server-v${provenance.version}.mcpb`,
+        '/plugin install claude-in-marv@steinegger-lab',
+        `https://github.com/${repository}/releases/download/v${manifest.version}/marv-api-v${provenance.version}.mcpb`,
         `Plugin ${manifest.version} requires MCPB ${provenance.version}.`,
     ]) {
         if (!readme.includes(command)) errors.push(`README is missing the public install command: ${command}`);

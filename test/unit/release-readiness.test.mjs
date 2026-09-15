@@ -16,7 +16,7 @@ function repository() {
     fs.mkdirSync(path.join(root, 'plugin', '.claude-plugin'), { recursive: true });
     fs.mkdirSync(path.join(root, 'mcpb'));
     fs.writeFileSync(path.join(root, 'plugin', '.claude-plugin', 'plugin.json'), JSON.stringify({
-        name: 'foldseek-server', version: PLUGIN_VERSION,
+        name: 'claude-in-marv', version: PLUGIN_VERSION,
     }));
     fs.writeFileSync(path.join(root, 'plugin', 'CHANGELOG.md'),
         `# Changelog\n\n## ${PLUGIN_VERSION} — 2099-01-02\n`);
@@ -24,8 +24,8 @@ function repository() {
     fs.writeFileSync(path.join(root, 'mcpb', 'manifest.json'), JSON.stringify({ version: '0.0.0' }));
     fs.writeFileSync(path.join(root, 'README.md'), [
         `/plugin marketplace add ${REPOSITORY}`,
-        '/plugin install foldseek-server@foldseek-server-tools',
-        '[Download `foldseek-server-v0.0.0.mcpb`](https://github.com/old-owner/old-plugin/releases/download/v0.0.0/foldseek-server-v0.0.0.mcpb)',
+        '/plugin install claude-in-marv@steinegger-lab',
+        '[Download `marv-api-v0.0.0.mcpb`](https://github.com/old-owner/old-plugin/releases/download/v0.0.0/marv-api-v0.0.0.mcpb)',
         'Plugin 0.0.0 requires MCPB 0.0.0.',
     ].join('\n'));
     return root;

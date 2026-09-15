@@ -21,7 +21,7 @@ function makePlugin(parent) {
     const plugin = path.join(parent, 'plugin');
     fs.mkdirSync(path.join(plugin, '.claude-plugin'), { recursive: true });
     fs.writeFileSync(path.join(plugin, '.claude-plugin', 'plugin.json'), `${JSON.stringify({
-        name: 'foldseek-server', version: PLUGIN_VERSION, description: 'test plugin',
+        name: 'claude-in-marv', version: PLUGIN_VERSION, description: 'test plugin',
     }, null, 2)}\n`);
     return plugin;
 }
@@ -32,15 +32,15 @@ function makeArtifact(parent, version = MCP_VERSION) {
     fs.mkdirSync(path.join(runtime, 'dist'), { recursive: true });
     fs.writeFileSync(path.join(runtime, 'LICENSE'), 'GPL-3.0-or-later\n');
     fs.writeFileSync(path.join(runtime, 'THIRD_PARTY_NOTICES.md'), '# Third-party notices\n');
-    fs.writeFileSync(path.join(runtime, 'scripts', 'foldseek-server-mcp.js'), '#!/usr/bin/env node\n');
-    fs.chmodSync(path.join(runtime, 'scripts', 'foldseek-server-mcp.js'), 0o755);
+    fs.writeFileSync(path.join(runtime, 'scripts', 'marv-mcp.js'), '#!/usr/bin/env node\n');
+    fs.chmodSync(path.join(runtime, 'scripts', 'marv-mcp.js'), 0o755);
     fs.writeFileSync(path.join(runtime, 'dist', 'server.mjs'), "import fs from 'node:fs';\nexport { fs };\n");
     fs.writeFileSync(path.join(runtime, 'package.json'), `${JSON.stringify({
-        name: 'foldseek-server-mcp', version, private: true, type: 'module',
+        name: 'marv-mcp', version, private: true, type: 'module',
     }, null, 2)}\n`);
-    const artifact = path.join(parent, `foldseek-server-plugin-runtime-v${version}.zip`);
+    const artifact = path.join(parent, `marv-api-runtime-v${version}.zip`);
     const zip = spawnSync('zip', ['-X', '-q', artifact,
-        'LICENSE', 'THIRD_PARTY_NOTICES.md', 'scripts/foldseek-server-mcp.js', 'dist/server.mjs', 'package.json'],
+        'LICENSE', 'THIRD_PARTY_NOTICES.md', 'scripts/marv-mcp.js', 'dist/server.mjs', 'package.json'],
     { cwd: runtime, encoding: 'utf8' });
     assert.equal(zip.status, 0, zip.stderr);
     return artifact;

@@ -10,15 +10,15 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 const MCP_RUNTIME_FILES = new Set([
-    'vendor/foldseek-server/LICENSE',
-    'vendor/foldseek-server/THIRD_PARTY_NOTICES.md',
-    'vendor/foldseek-server/bin/foldseek-server-mcp.js',
-    'vendor/foldseek-server/scripts/foldseek-server-mcp.js',
-    'vendor/foldseek-server/dist/server.mjs',
-    'vendor/foldseek-server/package.json',
+    'vendor/marv-api/LICENSE',
+    'vendor/marv-api/THIRD_PARTY_NOTICES.md',
+    'vendor/marv-api/bin/marv-mcp.js',
+    'vendor/marv-api/scripts/marv-mcp.js',
+    'vendor/marv-api/dist/server.mjs',
+    'vendor/marv-api/package.json',
 ]);
 const isMcpRuntime = p => MCP_RUNTIME_FILES.has(p);
-const isMcpLauncher = p => p === 'scripts/start-foldseek-server.mjs';
+const isMcpLauncher = p => p === 'scripts/start-marv-api.mjs';
 
 // ---------------------------------------------------------------- archive membership
 
@@ -28,7 +28,7 @@ export const SHIP = [
     { label: '.claude-plugin/plugin.json', test: p => p === '.claude-plugin/plugin.json' },
     { label: '.mcp.json', test: p => p === '.mcp.json' },
     { label: 'mcp-version.json', test: p => p === 'mcp-version.json' },
-    { label: 'scripts/start-foldseek-server.mjs', test: isMcpLauncher },
+    { label: 'scripts/start-marv-api.mjs', test: isMcpLauncher },
     { label: 'CHANGELOG.md', test: p => p === 'CHANGELOG.md' },
     { label: 'LICENSE', test: p => p === 'LICENSE' },
     { label: 'skills/<skill>/SKILL.md', test: p => /^skills\/[^/]+\/SKILL\.md$/.test(p) && !p.startsWith('skills/references/') },
@@ -36,7 +36,7 @@ export const SHIP = [
     { label: 'analysis/bin/<name>.mjs', test: p => /^analysis\/bin\/[^/]+\.mjs$/.test(p) },
     { label: 'analysis/src/**/<name>.mjs', test: p => /^analysis\/src\/(?:[^/]+\/)*[^/]+\.mjs$/.test(p) },
     { label: 'analysis/data/reach-v1.json', test: p => p === 'analysis/data/reach-v1.json' },
-    { label: 'vendor/foldseek-server release files', test: isMcpRuntime },
+    { label: 'vendor/marv-api release files', test: isMcpRuntime },
 ];
 
 // Explicitly rejected, and checked BEFORE the ship rules so a test module under analysis/src cannot
