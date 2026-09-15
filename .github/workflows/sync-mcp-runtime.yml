@@ -77,6 +77,7 @@ jobs:
           SOURCE_ROOT: ${{ steps.upstream.outputs.root }}
           VERSION: ${{ steps.source.outputs.version }}
         run: |
+          npm ci --prefix "$SOURCE_ROOT/frontend/lib"
           npm ci --prefix "$SOURCE_ROOT/mcp/core"
           npm ci --prefix "$SOURCE_ROOT/mcp/server"
           npm run build:plugin-runtime --prefix "$SOURCE_ROOT/mcp/server"
