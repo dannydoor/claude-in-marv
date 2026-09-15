@@ -1,6 +1,6 @@
 # mcp-contract
 
-**Read when:** calling a Foldseek MCP tool.
+**Read when:** calling a Marv API MCP tool.
 
 ## tool-surface
 
@@ -18,7 +18,7 @@ FoldMason, FoldDisco, and not-ready summaries omit `queryIdx`; do not synthesize
 Complete Foldseek and Multimer summaries and manifests report `queries.count` and may include bounded `queries.items[]` entries that map each `queryIdx` to its source `chain`.
 For a multi-chain query, choose the chain of interest from this mapping and keep its `queryIdx` unchanged through summary, export, hit selection, and forwarding.
 If `queries.items` is absent or the relevant `chain` is `null`, do not infer chain order; require an explicit `queryIdx` from the user.
-When Foldseek hits are sent to FoldMason with `includeQuery: true`, MCP 0.1.1 adds only the selected query chain for that `queryIdx`.
+When Foldseek hits are sent to FoldMason with `includeQuery: true`, the bundled Marv API runtime adds only the selected query chain for that `queryIdx`.
 
 ## response-channels
 

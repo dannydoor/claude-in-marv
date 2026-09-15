@@ -11,12 +11,12 @@
   },
   "artifact": {
     "name": "marv-api-runtime-v0.2.0.zip",
-    "sha256": "66d38b8820f1a7c446eb813182ff1636f9a7635029a3523e4769bde96a88fe42"
+    "sha256": "ee0fca356f21a73ebb23913757f2051e37b7b15da38b0b66b7cbf6b54b385c2b"
   },
   "files": {
     "LICENSE": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903",
     "THIRD_PARTY_NOTICES.md": "11a79806dc48f2bb9e67b0fbfadea2ebe6556bcb1623e2e9a1e7efcaeb4b9c4e",
-    "dist/server.mjs": "d930ebdb8ab1ef0099291eebe411e48e80434d1e56f9d0b179c412b5c7449899",
+    "dist/server.mjs": "a6eee63ae1971113dbcd11b201fdb95c71533a10ce4a3429d3f99382d2a3b618",
     "package.json": "1e0d354d6865ced0d225ae5044f6738c63145aa52bc9c5774688e6400ed0b7c1",
     "scripts/marv-mcp.js": "a18fa4d991535643efd522e4e001b8bb9f66a988456f2d34db177d38e122750a"
   }
