@@ -2,28 +2,29 @@
 
 ## 2.1.0 — 2026-09-15
 
-Renamed. The plugin is `claude-in-marv`, published from the `steinegger-lab` marketplace, and the
-server it bundles is `Marv API`. The nine skills, the analysis CLI and the workflows are unchanged.
+Renamed. The plugin is `claude-in-marv`, published from the `steinegger-lab` marketplace, and the server it bundles is `Marv API`.
+This release also incorporates workflow improvements identified during an end-to-end trial.
 
 ### Requires
 
-- MCP runtime 0.2.0. Claude Code uses the pinned runtime bundled here; Cowork requires the matching
-  Desktop MCPB.
+- MCP runtime 0.2.0. Claude Code uses the pinned runtime bundled here; Cowork requires the matching Desktop MCPB.
 - The server writes to `marv-shared` under the current user's home unless overridden.
 
 ### Changed
 
-- **Breaking.** Install as `claude-in-marv@steinegger-lab`, not
-  `foldseek-server@foldseek-server-tools`. Claude treats the renamed plugin as a different plugin:
-  remove the old one, install this one, and start a fresh session.
-- **Breaking.** The bundled server declares itself `Marv API`, so its tools are namespaced
-  `Marv_API` instead of `Foldseek_Server`. Anything that named the old prefix must be updated.
-- **Breaking.** Server configuration is `MARV_*` instead of `FOLDSEEK_SERVER_*`; the state directory
-  is a `.marv` folder and the shared folder is `marv-shared`, both under the current user's home.
-  Results, selections and exports cached under the old paths are neither read nor migrated.
+- **Breaking.** Install as `claude-in-marv@steinegger-lab`, not `foldseek-server@foldseek-server-tools`. Claude treats the renamed plugin as a different plugin: remove the old one, install this one, and start a fresh session.
+- **Breaking.** The bundled server declares itself `Marv API`, so its tools are namespaced `Marv_API` instead of `Foldseek_Server`. Anything that named the old prefix must be updated.
+- **Breaking.** Server configuration is `MARV_*` instead of `FOLDSEEK_SERVER_*`; the state directory is a `.marv` folder and the shared folder is `marv-shared`, both under the current user's home. Results, selections and exports cached under the old paths are neither read nor migrated.
 - Release files are `claude-in-marv-v2.1.0.plugin` and `marv-api-v0.2.0.mcpb`.
-- The `Server URL` setting now reads "Foldseek Search Server": it names the upstream deployment
-  being searched, not the server this plugin bundles.
+- The `Server URL` setting now reads "Foldseek Search Server": it names the upstream deployment being searched, not the server this plugin bundles.
+
+### Analysis and workflow improvements
+
+- Multi-chain Foldseek and Multimer results expose the query-chain mapping, preserve the selected `queryIdx`, and add only that selected query chain when forwarding hits to FoldMason.
+- Hit and member-candidate tables now include query and target lengths plus aligned spans for detecting partial alignments, domain mismatches, and length outliers.
+- `msa/column-composition` replaces the former substitution-oriented command and reports residue frequencies, conserved properties, occupancy, and reference context without choosing a motif automatically.
+- The new `msa/column-residues` table maps shortlisted columns across all alignment members, including gaps and modelled residue labels.
+- Alignment guidance now asks the agent to reconsider redundant, divergent, gap-rich, or wrong-domain member sets when they obscure a useful conservation signal.
 
 ## 2.0.0 — 2026-09-08
 
