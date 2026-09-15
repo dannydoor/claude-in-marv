@@ -5,6 +5,10 @@ Run Steinegger lab's field-leading protein structure analysis tools from Claude,
 The plugin contains 9 skills and a local analysis CLI.
 Claude Code can start the bundled MCP runtime; Cowork uses a separately installed Desktop extension.
 
+<p align="center">
+    <img src=".github/assets/logo.png" alt="ProjectName" width="640">
+</p>
+
 ## Requirements
 
 - Claude Code, or Claude Cowork with Claude Desktop open and the matching MCPB installed.
