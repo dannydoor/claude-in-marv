@@ -34,9 +34,12 @@ try {
     execFileSync('npx', ['--yes', '@anthropic-ai/mcpb@2.1.2', 'pack', stage, out], { cwd: root, stdio: 'inherit' });
     const actual = execFileSync('unzip', ['-Z1', out], { encoding: 'utf8' }).trim().split('\n').sort();
     assert.deepEqual(actual, expected, 'MCPB packer output differs from the explicit release set');
+    const unpacked = path.join(temporary, 'unpacked');
+    await fs.mkdir(unpacked);
+    execFileSync('unzip', ['-q', out, '-d', unpacked], { stdio: 'inherit' });
     for (const relative of expected) {
         assert.deepEqual(
-            execFileSync('unzip', ['-p', out, relative]),
+            await fs.readFile(path.join(unpacked, relative)),
             await fs.readFile(path.join(stage, relative)),
             `${relative} in the MCPB differs from its reviewed source`,
         );
