@@ -4,4 +4,5 @@
 *.plugin binary
 *.zip binary
 
+plugin/vendor/marv-api/** -text -whitespace
 plugin/vendor/marv-api/dist/server.mjs linguist-generated=true -whitespace

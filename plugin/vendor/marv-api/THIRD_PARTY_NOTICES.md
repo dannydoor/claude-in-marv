@@ -273,7 +273,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-## molstar 5.9.0
+## molstar 5.11.0
 
 License: MIT
 Source: https://github.com/molstar/molstar.git

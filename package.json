@@ -1,5 +1,5 @@
 {
-  "name": "foldseek-mcp-plugin",
+  "name": "claude-in-marv",
   "private": true,
   "description": "Source, tests and packaging for the claude-in-marv Claude plugin.",
   "license": "GPL-3.0-or-later",

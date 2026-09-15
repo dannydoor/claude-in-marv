@@ -38,6 +38,7 @@ From that checkout's repository root:
 
 ```bash
 git status --short
+npm ci --prefix frontend/lib
 npm ci --prefix mcp/core
 npm ci --prefix mcp/server
 npm run build:plugin-runtime --prefix mcp/server
