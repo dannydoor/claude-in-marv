@@ -12,7 +12,7 @@ Resolve the intended `queryIdx` from the result's query roster before interpreti
 
 ## Summary facts to check
 
-Read `queries.count` and `queries.items[]` first, then read per-database row counts, taxonomy availability, top hits, the full `ranking` object, query length and header, and top-level `completeness` for the intended query.
+Read `queries.count` and `queries.items[]` first, then read the submitted databases and search settings, per-database row counts, taxonomy availability, top hits, the full `ranking` object, query length and header, and top-level `completeness` for the intended query.
 
 ## Export condition and roles
 
@@ -46,9 +46,14 @@ State the criteria and the chosen row ids; descriptions are source annotations f
 
 **Phyletic distribution matters.** When the question asks about clade breadth or lineage distribution and taxonomy is available, also run `foldseek-phyletic-profile`.
 
+**The search does not cover the question well enough.** Keep the current result as evidence and identify the limitation before requesting a new search.
+A revised Foldseek search may change the compatible database set, search mode, `iterativeSearch`, or `taxFilter`; a revised Multimer search may change the database set, mode, or `taxFilter`, but does not support `iterativeSearch`.
+Treat these as separate comparison axes, change one at a time where practical, and hand the exact revised query and settings to `server-operations` ([search-settings](../references/mcp-contract.md#search-settings), [iteration budget](../references/orchestration.md#iteration-budget)).
+
 ## Submission contract
 
 None; this skill reads an existing artifact and does not mutate server state.
+A justified re-search is handed to `server-operations` rather than submitted here.
 
 ## Subcommands
 
@@ -64,7 +69,7 @@ Phyletic interpretation belongs to `foldseek-phyletic-profile` ([claim-limits](.
 ## Mutation and handoff
 
 This skill makes no mutation.
-`server-operations` saves and forwards chosen hits; `foldseek-phyletic-profile` owns tree-based clade analysis.
+`server-operations` submits revised searches, saves and forwards chosen hits; `foldseek-phyletic-profile` owns tree-based clade analysis.
 
 ## Output shapes
 

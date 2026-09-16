@@ -37,16 +37,16 @@ Add the public marketplace, install the plugin, and reload the active session:
 
 Cowork needs two installations because its cloud session does not execute the MCP runtime bundled in the plugin:
 
-1. [Download `marv-api-v0.2.0.mcpb`](https://github.com/dannydoor/claude-in-marv/releases/download/v2.1.0/marv-api-v0.2.0.mcpb) from this plugin's release.
+1. [Download `marv-api-v0.2.0.mcpb`](https://github.com/dannydoor/claude-in-marv/releases/download/v2.1.1/marv-api-v0.2.0.mcpb) from this plugin's release.
 2. In Claude Desktop, open **Settings → Extensions → Advanced settings → Install Extension…**, select the MCPB and keep Desktop open.
 3. Open **Cowork → Customize → Plugins → + → Add marketplace**, then add `https://github.com/dannydoor/claude-in-marv` from a repository.
 4. Install **claude-in-marv** from **steinegger-lab**, then start a fresh Cowork session.
 5. When asked, allow Desktop to use `~/marv-shared` or the override chosen during MCPB installation.
 
-Plugin 2.1.0 requires MCPB 0.2.0.
+Plugin 2.1.1 requires MCPB 0.2.0.
 Both installable files are produced from the same checked-in MCP runtime and published together.
 
-You can alternatively [download the `.plugin` file](https://github.com/dannydoor/claude-in-marv/releases/download/v2.1.0/claude-in-marv-v2.1.0.plugin) from the same release and upload it from the Plugins page.
+You can alternatively [download the `.plugin` file](https://github.com/dannydoor/claude-in-marv/releases/download/v2.1.1/claude-in-marv-v2.1.1.plugin) from the same release and upload it from the Plugins page.
 
 ### Local checkout
 

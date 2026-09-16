@@ -31,7 +31,8 @@ The detailed report should contain:
 - explicit inclusion and exclusion criteria plus the chosen hit ids, entry, or columns;
 - the key insight from each material analysis, with only the metric values that influenced a choice;
 - a brief FoldDisco evaluation covering exact or partial motif matches, RMSD, IDF, consistently retained residues, distance outliers when measured, and distinct structures;
-- for each revision, the source selection or result URL, what changed, why it changed, the new result URL, and the observed consequence;
+- when carrier scale matters, the independent source and coverage of any target-length measurement, or a clear statement that FoldDisco did not provide it;
+- for each revision, the source selection or result URL, what changed in the members, residues, query entry, database set, search mode, iterative-search setting, or filter, why it changed, the new result URL, and the observed consequence;
 - material limitations and any unresolved choice.
 
 Do not report an artifact root as durable provenance because exported artifacts can be collected by GC.
@@ -41,8 +42,11 @@ Omit logs, exhaustive metric dumps, and method prose unless requested.
 ## claim-limits
 
 - Report measurements as measurements and mechanisms as hypotheses.
-- Saturated or capped counts are lower bounds, never exhaustive rates.
+- Under saturation, observed hit, distinct-structure and shared-carrier counts are lower bounds, while rates and distributions describe only exported rows.
+- Do not call fold-only or motif-only counts lower bounds when either side is saturated; missing opposite-side rows can reclassify an observed side-only carrier as shared.
+- Separate the existence of a large or small carrier from claims about the carrier population, and never infer target-chain length from matched residue labels.
 - Rank or merge only where the metric and mode declare comparability.
+- Treat a changed database roster, taxonomy filter, query chain, mode, or iterative-search setting as a new search scope; do not present the runs as directly interchangeable or hide an unsuccessful attempt.
 - Missing inputs do not support absence claims; explain which measurements could not be made.
 - Put every material limitation in the conclusion and apply its consequence there or in the limits.
 
@@ -62,7 +66,7 @@ Warnings aggregate by code and scope with a count, bounded sample, and table pat
 | code | default level | claim action |
 |---|---|---|
 | `DATABASE_ERROR` | blocking | exclude and name that database |
-| `SATURATED_ROWS` | caution | use lower bounds; no exhaustive rate |
+| `SATURATED_ROWS` | caution | use lower bounds only for monotone observed counts; restrict rates and distributions to exported rows |
 | `ZERO_HIT_DATABASE` | note | report zero as a result |
 | `NO_TAXONOMY_TREE` | caution | exclude from clade arithmetic |
 | `LOW_TAXONOMY_COVERAGE` | caution | restrict clade claims to included databases |

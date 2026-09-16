@@ -73,6 +73,8 @@ To filter across all FoldDisco rows, rerun `folddisco/shortlist` with a sufficie
 `description`, `organism`, `taxName`, and `targetName` are source annotations, not verified biological conclusions.
 `qLen` and `dbLen` are the query and target lengths, while `qStartPos`/`qEndPos` and `dbStartPos`/`dbEndPos` are inclusive server-reported alignment endpoints.
 Use these fields to review partial alignments, domain boundaries, and disproportionate members; they are evidence for inspection rather than automatic exclusion rules.
+These length fields belong to Foldseek hit rows; FoldDisco rows do not currently provide target-chain length.
+The largest matched target-residue label locates the motif within a target and is not a chain length or an upper bound on one.
 
 ## hit-tables
 
@@ -101,6 +103,11 @@ Only high-identity hits can make conservation uniformly uninformative, while ver
 Choose a reasoned spread of moderately similar hits and consult rank, organism, domain context, and description rather than imposing one universal identity interval.
 After alignment, use pairwise identity to find realised redundancy; an overly close member can be removed when the intended family scope remains represented.
 Use query and target lengths with their aligned spans to identify possible domain truncation, extra domains, or unusually partial coverage before forwarding a member.
+
+A new Foldseek search is justified when the first run cannot represent the databases, taxonomic population, query chain, or search behaviour needed by the question, not merely because another setting returns more hits.
+Changing the database roster or `taxFilter` changes the population being searched, so a restricted run cannot support an absence claim outside that scope and database-specific comparisons should use databases shared by both runs.
+Changing `mode` or enabling Foldseek `iterativeSearch` changes search behaviour; read each result's ranking semantics and do not compare raw ranks or scores across runs unless the server declares them comparable.
+Preserve all attempted result URLs and interpret whether the declared limitation was resolved instead of selecting only the most favourable run.
 
 ## msa-tables
 
@@ -159,6 +166,13 @@ Large per-residue distances identify correspondences to review and may indicate 
 Retention describes exported hits; low retention can identify a residue that restricts search sensitivity, not biological non-essentiality.
 Compare IDF with RMSD, retention, match strata, descriptions, and carrier coherence, especially when a revision changes motif length.
 A revision may add or remove several residues when it tests one stated hypothesis about over-specificity, noise, or an excluded candidate.
+A modal full-match pattern means only that complete matches are the most frequent exported pattern; it does not establish specificity or biological correctness.
+A non-modal full-match pattern can motivate review for an overly restrictive residue or weak retention, but is not a diagnosis by itself.
+Saturation is independent of motif specificity, and a tied ranking tier at the export boundary shows cutoff sensitivity rather than whether the motif is too permissive.
+Possible under-specificity is supported when full matches remain geometrically or contextually incoherent and a reasoned extension improves discrimination while retaining the intended carriers.
+Possible over-specificity is supported when coherent near-matches repeatedly omit the same residue and a reasoned relaxation restores them without losing geometric coherence.
+Across different motif lengths, compare self-recovery, intended-carrier retention, geometry, residue distances, strata and carrier coherence; do not treat raw IDF, full-match counts, or rates as directly comparable performance scores.
+A bounded sensitivity analysis may compare a small declared set of variants, but it must report every attempted variant and must not select only the one supporting a preferred conclusion.
 
 ## reach-vocabulary
 

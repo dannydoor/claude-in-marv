@@ -26,7 +26,8 @@ On cloud Cowork, stage the exported descriptor files with `device_stage_files` (
 2. Otherwise export, preflight, and run `folddisco/result-metrics` per database.
 3. Add `folddisco/residue-retention` for residue-level retention, `folddisco/shortlist` for rows to inspect, or `folddisco/residue-distances` to locate geometrically inconsistent residue correspondences.
 4. Query `shortlist.tsv`, `patterns.tsv`, and `residue-distances.tsv` with `awk` to filter by named metrics and to print each row or residue before discussing it; raise `--top` when the shortlist must cover more than the displayed rows ([table row coverage](../references/interpretation.md#table-row-coverage)).
-5. Interpret the observations explicitly; neither a shortlist nor a distance threshold is an automatic recommendation, but good to review.
+5. Interpret the observations explicitly; neither a shortlist nor a distance threshold is an automatic recommendation.
+6. Check whether the evidence answers the user's carrier, specificity, or scale question; a completed search may still leave that conclusion unresolved and may justify a reasoned change to the residue set, query entry, or database scope.
 
 `T` is the exported pattern width, never the largest observed node count.
 Report node count together with offset `T - nodecount`, and divide rates by that database's own row count.
@@ -41,7 +42,18 @@ Inspect a small bounded TSV in full or use header-based filters for a large tabl
 
 **No rows in one database.** Report that database as a valid empty block beside the non-empty blocks.
 
-**The motif needs revision.** Return to `foldmason-motif-forwarding` when the motif appears over-specific, too permissive, or burdened by one or more low-retention or geometrically incoherent residues; compare a reasoned revision rather than sweeping combinations.
+**Possible under-specificity.** When full matches include geometrically or contextually incoherent carriers, compare the core motif with a reasoned extension using nearby, well-supported conserved positions; saturation or a modal full-match pattern alone does not establish this condition.
+
+**Possible over-specificity.** When coherent near-matches repeatedly omit the same residue, compare a reasoned relaxed variant; a non-modal full-match pattern is a review signal rather than a diagnosis.
+
+**Bounded motif sensitivity analysis.** Return to `foldmason-motif-forwarding` to compare a small declared set of variants when the initial motif does not answer the question clearly; keep the query entry and database scope fixed while isolating motif composition, and retain every result rather than selecting only the most favourable one ([iteration budget](../references/orchestration.md#iteration-budget)).
+
+**Query entry limits interpretation.** If the chosen FoldMason entry has gaps, uncertain mapping, atypical geometry, or does not represent every entry relevant to the question, compare one or more other named entries through separate FoldDisco jobs; FoldDisco remains single-query, so do not pool them into one submission.
+
+**Database scope limits interpretation.** If the completed job omitted relevant compatible databases or its database roster cannot support the requested carrier, annotation, or breadth claim, rerun with a reasoned expanded or revised roster.
+Keep weakly annotated databases when their structural coverage matters, but restrict annotation or taxonomy claims to sources that provide that evidence; compare rates and carrier composition only over explicitly aligned database sets.
+
+**Carrier scale requested.** FoldDisco target-residue labels do not provide chain length; use an independent length source for named carriers or report the population-scale question as unresolved ([motif metric interpretation](../references/interpretation.md#motif-metric-interpretation)).
 
 ## Submission contract
 
@@ -58,6 +70,8 @@ Do not pool database-specific rates or IDF rankings.
 Compare raw IDF only within one database and motif length, and distinguish motif-match rows from `distinctStructures`.
 Report RMSD as a distribution, residue retention as an observed sensitivity constraint, and every stratum with its sample size; none is an automatic biological label ([motif metric interpretation](../references/interpretation.md#motif-metric-interpretation), [claim-limits](../references/reporting.md#claim-limits)).
 Treat residue distances above 5 Å or 10 Å as review flags only; transformation or correspondence errors, flexibility, and alternate conformations can also produce large distances.
+Do not compare raw IDF, full-match counts, or rates as performance scores across different motif lengths.
+Do not infer target-chain length from the highest matched residue number.
 
 ## Mutation and handoff
 
@@ -70,5 +84,5 @@ Facts each outcome must establish and hand on; the answer states them in the rea
 
 - **Success** — the main exact or partial motif-match pattern in each database, relevant rates and RMSD, residues that may restrict sensitivity, notable candidates, limits, and result URLs.
 - **Valid empty** — resolved databases with no motif hits, reported as a real result.
-- **Degraded** — saturation or unresolved motif width, with unsupported figures omitted.
+- **Degraded** — saturation, unresolved motif width, insufficient discrimination, or unavailable target lengths prevent part of the requested conclusion; state exactly what remains unresolved.
 - **Error** — explain which required information is unavailable or inconsistent and what must be corrected before analysis.

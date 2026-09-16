@@ -39,6 +39,14 @@ On cloud Cowork, stage those exported descriptor files with `device_stage_files`
 
 **A completed FoldDisco result motivates revision.** Follow its lineage back to the source column selection, copy it under a new name, change one declared residue-set hypothesis with `add`, `remove`, or `set`, and forward the revised selection ([revision-from-lineage](../references/workflow-state.md#revision-from-lineage)).
 
+**Bounded motif sensitivity analysis.** When the initial motif does not answer the question clearly, compare a small declared set of variants: the structure-derived core, a relaxed variant that removes one or more repeatedly omitted residues, or an extended variant that adds nearby, well-supported conserved positions.
+Use query-specific evidence rather than a universal conservation or distance cutoff, keep the query entry and database scope fixed while testing motif composition, and preserve every attempted selection and result ([iteration budget](../references/orchestration.md#iteration-budget)).
+
+**Query-entry comparison.** When the chosen entry may distort the motif or several FoldMason entries matter to the question, map the same selected columns to each named entry, verify each returned `entryName`, and forward each resulting selection as a separate FoldDisco job.
+
+**Database-scope revision.** When the original job omitted relevant compatible databases or its roster cannot support the requested interpretation, call `list_databases({tool: "folddisco"})` again and forward a new job with a reasoned expanded or revised set.
+Record every database set; when query entry or database scope changes, treat it as a separate comparison axis rather than evidence about motif composition alone.
+
 ## Submission contract
 
 Use a meaningful new name for each forwarding job; add a numeric suffix only to avoid a collision.
@@ -54,6 +62,7 @@ Both take `--entry` and `--columns`; author numbering also takes `--structure` (
 The forwarded motif is exactly what `select_msa_columns` returns; the analysis never selects a substitution automatically.
 An MSA-derived motif must follow this selection-and-forwarding path rather than being copied into a direct `folddisco_search` call.
 Keep author numbering distinct from alignment labels, and never apply modelled-chain labels to a separately fetched deposit ([MSA metric interpretation](../references/interpretation.md#msa-metric-interpretation), [claim-limits](../references/reporting.md#claim-limits)).
+Motif variants test sensitivity to composition; they do not identify a universally optimal motif.
 
 ## Mutation and handoff
 

@@ -37,7 +37,9 @@ Identifier grammar, entry-level eligibility, assembly and chain qualifiers, and 
 
 **No comparable database pair.** Report the rosters and why no intersection was attempted.
 
-**Ambiguous identifiers or saturation.** Exclude ambiguous carriers and report affected counts as lower bounds.
+**Ambiguous identifiers.** Exclude ambiguous carriers and state which comparison counts they affect.
+
+**Saturation.** Report observed shared carriers as “at least”; treat fold-only and motif-only counts as conditional on the exported sets because missing opposite-side rows may reclassify them as shared.
 
 **Multimer or cross-chain comparison.** The monomer PDB entry key is withheld; keep structure-level carriers and report `summary.matchRule.withheld`.
 
@@ -70,5 +72,5 @@ Facts each outcome must establish and hand on; the answer states them in the rea
 
 - **Success** — the databases compared, structures found by both searches, exact and normalised match counts, relevant assembly or chain limitations, shared starting query, and result URLs.
 - **Valid empty** — comparable searches with no structure found by both.
-- **Degraded** — saturation or ambiguity makes counts lower bounds.
+- **Degraded** — saturation or ambiguity restricts the comparison; distinguish shared lower bounds from side-only counts conditional on the exported sets.
 - **Error** — explain why the searches cannot be compared and what input or confirmation is needed; write no result bundle.

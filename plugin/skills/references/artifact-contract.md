@@ -66,7 +66,8 @@ Row-level `taxId`/`taxName` alone is insufficient; report contributing databases
 ## saturation
 
 Use manifest `completeness` directly.
-Saturated counts are lower bounds; FoldDisco saturation is proven while Foldseek saturation is inferred.
+Observed hit and distinct-structure counts are lower bounds under saturation, while rates and distributions describe only the exported rows; FoldDisco saturation is proven while Foldseek saturation is inferred.
+For a saturated fold-versus-motif comparison, observed shared carriers are a lower bound, but side-only counts are conditional on both exported sets and may move in either direction as missing rows are added.
 
 ## file-formats
 
@@ -76,6 +77,7 @@ Saturated counts are lower bounds; FoldDisco saturation is proven while Foldseek
 - Residue-map labels are modelled sequence positions, not deposited author numbering; author numbering requires `msa/author-numbering` against the matching structure.
 - `msa-coordinates` is a gzipped `{totalEntries, entries[]}` document whose entries carry `index`, `name`, and comma-separated Cα xyz triples in modelled-residue order.
 - Multimer chain metrics under `chains[]` differ from top-level metrics.
+- FoldDisco rows identify matched target residues but do not expose target-chain length; a residue position must not be used as a length estimate.
 - Row and column files are streamed and large data stays off stdout.
 - `msa/compactness` requires `msa-coordinates` and `msa-residue-map`.
 - FoldDisco `query-residue-coordinates` contains query-motif Cα coordinates in motif order.

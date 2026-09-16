@@ -38,6 +38,10 @@ Hand the descriptor and required roles to the downstream skill rather than readi
 
 **Revision after a downstream result.** Follow its recorded lineage to the source ticket and selection, copy that selection under a new name, make the reasoned changes, and submit the revised selection ([revision-from-lineage](../references/workflow-state.md#revision-from-lineage)).
 
+**Revised structure search.** Preserve the earlier result and state what it failed to cover before submitting a new ticket from the same query origin.
+Database roster, mode, taxonomy filter, query chain, and the Foldseek-only `iterativeSearch` option are separate axes; change one at a time where practical, call `list_databases` again, validate the exact revised input, and record the reason and both result URLs ([search-settings](../references/mcp-contract.md#search-settings)).
+Do not confuse a reasoned sequence of separate searches with the server's `iterativeSearch: true` option.
+
 **Validation refusal.** Correct `{ok: false, problems[]}` before submitting; surface taxonomy candidates verbatim and ask for a numeric id when needed.
 
 **Accession-derived motif.** Treat a Q-BioLiP structure-contact-derived binding-site annotation returned through `autoMotif` as a motif candidate, inspect its residues, and require explicit acceptance before the real submission ([input-origins](../references/mcp-contract.md#input-origins)).
@@ -53,8 +57,8 @@ An MSA-derived motif must go through `foldmason-motif-forwarding`, which verifie
 
 | Intent | Tool | Required | Important refusal |
 |---|---|---|---|
-| structure search | `foldseek_search` | `databases` and exactly one advertised query origin | multiple origins or a literal database path |
-| complex search | `multimer_search` | same | same; chain values are not top-level values |
+| structure search | `foldseek_search` | `databases` and exactly one advertised query origin; optional supported `mode`, `iterativeSearch`, or `taxFilter` | multiple origins, a literal database path, or an unsupported mode |
+| complex search | `multimer_search` | the same origins and databases; optional supported `mode` or `taxFilter` | the same origin errors; `iterativeSearch` is unsupported |
 | alignment | `foldmason_msa` | at least two structures total across `files`, `fileRefs`, and `accessions` | fewer than two inputs |
 | motif search | `folddisco_search` | `databases`, one query origin, and an explicit `motif` unless `{autoMotif: true}` supplies one | `taxFilter`, `mode`, or a missing motif |
 | hit selection | `select_hits` | `ticketId`, action, and the fields required by that action | reusing a frozen forwarding name |

@@ -1,5 +1,15 @@
 # Changelog
 
+## 2.1.1 — 2026-09-16
+
+Guidance-only update; the bundled MCP runtime remains 0.2.0.
+
+### Changed
+
+- Foldseek and Multimer workflows may rerun the same query with a reasoned change to the database set, search mode, taxonomy filter, query chain, or supported iterative-search setting, while preserving and comparing earlier results.
+- FoldDisco guidance now treats motif composition, query entry, and database scope as revisable axes, and distinguishes saturation from evidence of an overly broad or overly restrictive motif.
+- Reports record why each revision was made, what changed, and what the comparison supports without treating hit count or incomparable scores as automatic improvement.
+
 ## 2.1.0 — 2026-09-15
 
 Renamed. The plugin is `claude-in-marv`, published from the `steinegger-lab` marketplace, and the server it bundles is `Marv API`.

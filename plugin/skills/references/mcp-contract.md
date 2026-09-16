@@ -48,6 +48,19 @@ Call `list_databases({tool})` before submission and use returned ids; availabili
 `validateOnly: true` checks the exact input intended for submission without creating a ticket; do not use it as a residue-lookup mechanism, and it does not prove that a database combination is valid.
 `send_to` also takes `databases`; FoldDisco forwarding requires at least one motif-capable database and refuses omission or ineligible paths before creating a job.
 `dbIndex` is result order, not submitted-list position.
+A Foldseek, Multimer, or FoldDisco job may use a reasoned expanded or revised database set; record that set and compare database-specific metrics only where the rosters align.
+
+## search-settings
+
+`foldseek_search` accepts `mode` values `3diaa`, `tmalign`, or `lolalign`, plus optional `iterativeSearch` and `taxFilter`.
+`multimer_search` accepts the same modes and `taxFilter` but refuses `iterativeSearch`.
+`folddisco_search` refuses `mode`, `iterativeSearch`, and `taxFilter` rather than ignoring them.
+
+A sequence of revised searches is not the same thing as setting `iterativeSearch: true` on one Foldseek submission.
+When the first result cannot answer the question, preserve it and submit a new ticket with a reasoned change to the database roster, mode, taxonomy filter, query chain, or Foldseek iterative-search option.
+Treat each setting as a separate comparison axis and change one at a time where practical.
+Run `validateOnly: true` on the exact revised input, then record the old and new result URLs, the changed setting, and the reason.
+After a mode change, read the new result's `ranking` object again instead of carrying over score direction or comparability from the earlier run.
 
 ## zero-hit
 
@@ -91,4 +104,4 @@ Pass scientific names or numeric ids through `taxFilter` and record the returned
 For an ambiguous common name, show returned candidates and ask for a numeric id.
 Resolved ids are strings while row `taxId` is numeric, so coerce when joining.
 `taxFilter` constrains a new search, while `hit/phyletic --taxon <NCBI-tax-id>` filters an exported result through its supplied taxonomy tree without changing the ticket.
-FoldDisco accepts neither `taxFilter` nor `mode` and refuses them rather than ignoring them.
+FoldDisco accepts none of `taxFilter`, `mode`, or `iterativeSearch` and refuses them rather than ignoring them.
