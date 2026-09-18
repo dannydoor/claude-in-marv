@@ -8,6 +8,13 @@ import { namedReference, requestedColumns } from './motif-input.mjs';
 
 const MIN_RESIDUES_FOR_SPREAD = 2;
 
+// `a` and `b` are exported residue labels; the 0-based columns stay beside them so the table joins
+// to `column-residues.tsv` and to the `--columns` selector without a second lookup.
+const PAIRWISE_HEADER = ['a', 'aColumn', 'b', 'bColumn', 'distanceA'];
+
+// The residue map is the only source of a residue label, as in `msa/column-residues`.
+const labelOf = (map, residue) => map.tokens[residue] ?? '';
+
 export const compactness = {
     name: 'msa/compactness',
     version: 1,
@@ -37,7 +44,7 @@ export const compactness = {
                     residueSpread: [],
                     claimLimit: 'Ca geometry only: no side-chain, ligand, metal, or functional-site inference',
                 },
-                tables: { pairwise: { header: ['a', 'b', 'distanceA'], rows: [] } },
+                tables: { pairwise: { header: PAIRWISE_HEADER, rows: [] } },
             };
         }
 
@@ -46,7 +53,14 @@ export const compactness = {
         for (const column of requested) {
             const residue = map.residueOf(column);
             if (residue === null) { missing.push(column); continue; }
-            residues.push({ column, oneBased: column + 1, residue, point: caOf(coords, residue) });
+            const label = labelOf(map, residue);
+            if (label === '') {
+                context.warnings.add('INTEGRITY_ISSUE', {
+                    scope: { entryName: reference.name, reason: 'the residue map exports no label for a resolved residue' },
+                    id: column,
+                });
+            }
+            residues.push({ column, oneBased: column + 1, residue, label, point: caOf(coords, residue) });
         }
         if (missing.length > 0) {
             for (const column of missing) {
@@ -60,8 +74,10 @@ export const compactness = {
         for (let i = 0; i < residues.length; i += 1) {
             for (let j = i + 1; j < residues.length; j += 1) {
                 pairs.push({
-                    a: residues[i].oneBased,
-                    b: residues[j].oneBased,
+                    a: residues[i].label,
+                    aColumn: residues[i].column,
+                    b: residues[j].label,
+                    bColumn: residues[j].column,
                     distanceA: round(distance(residues[i].point, residues[j].point), 3),
                 });
             }
@@ -73,13 +89,19 @@ export const compactness = {
         const residueSpread = residues.length < MIN_RESIDUES_FOR_SPREAD ? [] : residues.map(residue => {
             const worst = Math.max(...residues.filter(other => other !== residue)
                 .map(other => distance(residue.point, other.point)));
-            return { oneBased: residue.oneBased, column: residue.column, maxToOthersA: round(worst, 3) };
+            return {
+                label: residue.label,
+                column: residue.column,
+                oneBased: residue.oneBased,
+                maxToOthersA: round(worst, 3),
+            };
         }).sort((a, b) => b.maxToOthersA - a.maxToOthersA || a.column - b.column);
 
         const summary = {
             entryName: reference.name,
             columnsRequested: requested,
-            residues: residues.map(({ column, oneBased, residue }) => ({ column, oneBased, residueIndex: residue })),
+            residues: residues.map(({ column, oneBased, residue, label }) =>
+                ({ column, oneBased, residueIndex: residue, label })),
             resolved: residues.length,
             unresolvedColumns: missing,
             pairwiseMaxA: maxA,
@@ -88,6 +110,6 @@ export const compactness = {
             claimLimit: 'Ca geometry only: no side-chain, ligand, metal, or functional-site inference',
         };
 
-        return { summary, tables: { pairwise: { header: ['a', 'b', 'distanceA'], rows: pairs } } };
+        return { summary, tables: { pairwise: { header: PAIRWISE_HEADER, rows: pairs } } };
     },
 };

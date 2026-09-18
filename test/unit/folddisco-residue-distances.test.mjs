@@ -48,6 +48,11 @@ test('FoldDisco residue distances apply target-to-query transforms without shift
         };
 
         const out = await residueDistances.run(context);
+        // Every table this subcommand writes declares a `database` column, so every row must fill it.
+        for (const [name, table] of Object.entries(out.tables)) {
+            assert.ok(table.header.includes('database'), `${name}: no database column`);
+            for (const row of table.rows) assert.equal(row.database, 'pdb_folddisco', `${name}: database`);
+        }
         assert.deepEqual(out.tables['residue-distances'].rows.map(row => row.distanceA), [null, 0, 19, null]);
         assert.deepEqual(out.tables['residue-distances'].rows.map(row => row.targetResidue),
             [null, 'B20', 'B21', null]);

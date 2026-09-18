@@ -1,5 +1,20 @@
 # Changelog
 
+## 2.1.2 — 2026-09-19
+
+Analysis-output fixes; the bundled MCP runtime remains 0.2.0.
+
+### Fixed
+
+- `folddisco/residue-distances` now fills the `database` column it declares. `residue-distances.tsv`, `hit-distance-summary.tsv` and `residue-distance-summary.tsv` carried the roster identity as `dbIndex` only, so the declared `database` id was written empty in every row of all three tables, and a join by database name silently produced an empty key.
+- `msa/compactness` now names `pairwise.tsv` rows by the exported residue label, as its documented contract states. It emitted the 1-based alignment column instead, which reads as a residue number and mislabels the rows; the measured `distanceA` was unaffected.
+
+### Changed
+
+- `pairwise.tsv` carries `aColumn` and `bColumn` beside the labels, so the table joins to `column-residues.tsv` and to the `--columns` selector without a second run. The compactness summary reports the residue label with each entry of `residues[]` and `residueSpread[]`.
+- `msa/compactness` records an `INTEGRITY_ISSUE` warning when the residue map resolves a column but exports no label for it, rather than writing a blank cell without explanation.
+- FoldDisco and conserved-site guidance now states that tables from one artifact are joined on `dbIndex`, with `database` kept as a display id.
+
 ## 2.1.1 — 2026-09-16
 
 Guidance-only update; the bundled MCP runtime remains 0.2.0.

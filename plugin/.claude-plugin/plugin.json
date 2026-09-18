@@ -1,6 +1,6 @@
 {
   "name": "claude-in-marv",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "description": "Analyze protein structures with Steinegger Lab tools.",
   "author": {
     "name": "Steinegger Lab"

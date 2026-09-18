@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
+import zlib from 'node:zlib';
 import { fileURLToPath } from 'node:url';
 
 import { GROUPS, SUBCOMMANDS, namesIn } from '../../plugin/analysis/src/cli/registry.mjs';
@@ -14,6 +15,7 @@ import { phyletic } from '../../plugin/analysis/src/hit/phyletic.mjs';
 import { columnRanking } from '../../plugin/analysis/src/msa/column-ranking.mjs';
 import { columnComposition } from '../../plugin/analysis/src/msa/column-composition.mjs';
 import { columnResidues } from '../../plugin/analysis/src/msa/column-residues.mjs';
+import { compactness } from '../../plugin/analysis/src/msa/compactness.mjs';
 import { Warnings } from '../../plugin/analysis/src/io/warnings.mjs';
 import { writeTsv } from '../../plugin/analysis/src/io/write.mjs';
 import { tmp } from '../support/temp.mjs';
@@ -316,6 +318,39 @@ test('column residues preserve gaps and map each selected column across the rost
     });
 });
 
+test('compactness names pairwise rows by residue label, keeping the column beside it', async () => {
+    const root = msaFixture();
+    const warnings = new Warnings();
+    const result = await compactness.run(msaContext(root, warnings, [['columns', '0,2'], ['reference', 'hit']]));
+
+    assert.deepEqual(result.tables.pairwise.header, ['a', 'aColumn', 'b', 'bColumn', 'distanceA']);
+    assert.deepEqual(result.tables.pairwise.rows,
+        [{ a: 'B1', aColumn: 0, b: 'B3', bColumn: 2, distanceA: 7 }]);
+    assert.deepEqual(result.summary.residues, [
+        { column: 0, oneBased: 1, residueIndex: 0, label: 'B1' },
+        { column: 2, oneBased: 3, residueIndex: 2, label: 'B3' },
+    ]);
+    assert.deepEqual(result.summary.residueSpread, [
+        { label: 'B1', column: 0, oneBased: 1, maxToOthersA: 7 },
+        { label: 'B3', column: 2, oneBased: 3, maxToOthersA: 7 },
+    ]);
+    assert.deepEqual(warnings.toJSON(), []);
+});
+
+test('compactness reports an unlabelled residue instead of substituting its column number', async () => {
+    const root = msaFixture();
+    fs.writeFileSync(path.join(root, 'residue-map.jsonl'), `${[
+        { entryName: 'query', occupiedColumns: ['0', '2'], tokens: ['A1', 'A2'] },
+        { entryName: 'hit', occupiedColumns: ['0-2'] },
+    ].map(JSON.stringify).join('\n')}\n`);
+    const warnings = new Warnings();
+    const result = await compactness.run(msaContext(root, warnings, [['columns', '0,2'], ['reference', 'hit']]));
+
+    assert.deepEqual(result.tables.pairwise.rows,
+        [{ a: '', aColumn: 0, b: '', bColumn: 2, distanceA: 7 }]);
+    assert.deepEqual(warnings.toJSON().map(warning => warning.code), ['INTEGRITY_ISSUE']);
+});
+
 function msaFixture() {
     const root = tmp('column-detail-');
     fs.writeFileSync(path.join(root, 'entries.json'), JSON.stringify({
@@ -337,6 +372,12 @@ function msaFixture() {
         { column: 2, occupancy: 1, conservation: { score: 11, positive: ['polar'], negative: [] }, consensus: { nonGapCount: 2, glyph: 'C', modalFractionNonGap: 1, letters: [{ glyph: 'C', count: 2, logoFraction: 1 }] } },
     ];
     fs.writeFileSync(path.join(root, 'columns.jsonl'), columns.map(JSON.stringify).join('\n') + '\n');
+    fs.writeFileSync(path.join(root, 'coordinates.json.gz'), zlib.gzipSync(JSON.stringify({
+        entries: [
+            { name: 'query', ca: '0,0,0,4,0,0' },
+            { name: 'hit', ca: '0,0,0,3,0,0,7,0,0' },
+        ],
+    })));
     return root;
 }
 
@@ -347,6 +388,7 @@ const msaContext = (root, warnings, args) => ({
         'msa-fasta-aa': { present: true, units: [{ path: 'aa.fasta' }] },
         'msa-residue-map': { present: true, units: [{ path: 'residue-map.jsonl' }] },
         'msa-columns': { present: true, units: [{ path: 'columns.jsonl' }] },
+        'msa-coordinates': { present: true, units: [{ path: 'coordinates.json.gz' }] },
     },
     warnings,
     args: new Map(args),

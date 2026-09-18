@@ -195,20 +195,23 @@ async function collectDatabase(context, unit, label, query) {
     return { details, hits: hitRows, residues: residueRows };
 }
 
+// Rows carry the roster identity as `id`; the `database` column is that id, as in every other FoldDisco table.
+const named = rows => rows.map(row => ({ ...row, database: row.id }));
+
 const detailTable = rows => ({
     header: ['dbIndex', 'database', 'rowId', 'target', 'motifIndex', 'queryResidue', 'targetResidue',
         'matched', 'measured', 'distanceA', 'over5A', 'over10A'],
-    rows,
+    rows: named(rows),
 });
 
 const hitTable = rows => ({
     header: ['dbIndex', 'database', 'rowId', 'target', 'matchedResidues', 'gaps', 'over5A', 'over10A',
         'n', 'min', 'median', 'mean', 'max'],
-    rows,
+    rows: named(rows),
 });
 
 const residueTable = rows => ({
     header: ['dbIndex', 'database', 'motifIndex', 'queryResidue', 'hits', 'matchedHits', 'measuredHits', 'gapHits',
         'over5A', 'over5Fraction', 'over10A', 'over10Fraction', 'n', 'min', 'median', 'mean', 'max'],
-    rows,
+    rows: named(rows),
 });

@@ -26,7 +26,7 @@ On cloud Cowork, stage the exported descriptor files with `device_stage_files` (
 3. Use `msa/column-residues` when gaps or member-specific residue mappings could change the interpretation.
 4. Run `msa/compactness` for chosen columns only when coordinates and a residue map exist, and use it as supporting geometry rather than a selection gate ([compactness interpretation](../references/interpretation.md#compactness-interpretation)).
 5. Query the generated TSVs with `awk` before naming a candidate; filter the complete `columns.tsv` when a capped ranking table may omit rows ([table row coverage](../references/interpretation.md#table-row-coverage), [TSV query patterns](../references/interpretation.md#tsv-query-patterns)).
-6. Join results by `column`, keeping it as the 0-based machine value and using `oneBased` for display only.
+6. Join results by `column`, keeping it as the 0-based machine value and using `oneBased` for display only; `pairwise.tsv` names each residue by its exported label and carries `aColumn`/`bColumn` for that join.
 
 Property vectors, modal fraction, occupancy and geometry inform interpretation; they do not alter the score order or establish a functional site.
 Conservation may reflect structural maintenance, biological function, or both, and these measurements do not separate those causes automatically.

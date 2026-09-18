@@ -66,6 +66,7 @@ To filter across all FoldDisco rows, rerun `folddisco/shortlist` with a sufficie
 ## common-fields
 
 `dbIndex` is the artifact-local database position; `db` or `database` is its declared id.
+Join tables produced from one artifact on `dbIndex`, which every FoldDisco and hit table carries; `database` is the roster id for display and reporting.
 `id` or `rowId` is the stable exported-row identifier, while `target` is the server-written target identifier and may repeat.
 `rankInDatabase` is 1-based within a database; `rankMerged` exists only when the declared ranking metric is cross-database comparable.
 `rankingValue` or `value` uses the ranking field and direction recorded in the result summary.
@@ -117,7 +118,7 @@ Preserve all attempted result URLs and interpret whether the declared limitation
 | `members.tsv` | Entry `index`, `name`, `residueCount`; occupied-column count and fraction; `gapFraction`; amino-acid `consensusAgreement`. |
 | `blocks.tsv` | Inclusive 0-based `from`/`to`, display range `oneBased`, `length`, support count, occupancy minimum/mean/maximum, and semicolon-separated `carriers`. |
 | `columns-ranked.tsv` | `rank`; column indices and `glyph`; `conservationScore`; space-separated `positive`/`negative` properties; identity booleans; occupancy, support, modal fraction, `lddt`, and entropy. |
-| `pairwise.tsv` | Selected residue labels `a` and `b`, with Cα `distanceA` in ångström. |
+| `pairwise.tsv` | Exported reference-entry residue labels `a` and `b` with their 0-based `aColumn` and `bColumn`, and Cα `distanceA` in ångström. |
 | `column-composition.tsv` | Column indices, `entryName`, `status`, reference and consensus glyphs, identity and conservation fields, properties, group codes, unmapped properties, and `letters` as `glyph:count:fraction`. |
 | `column-residues.tsv` | Each selected column across every alignment member: entry index and name, amino-acid glyph, gap state, 0-based modelled `residueIndex`, and exported residue `label`. |
 | `numbering.tsv` | Column indices, `entryName`, `chain`, modelled `residueIndex` and `label`, deposited `authorNumber`/`insertionCode`, residue and alignment-row glyph, and boolean `agrees`. |

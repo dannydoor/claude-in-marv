@@ -33,6 +33,7 @@ On cloud Cowork, stage the exported descriptor files with `device_stage_files` (
 Report node count together with offset `T - nodecount`, and divide rates by that database's own row count.
 Interpret IDF, RMSD, retention, match strata, and carrier coherence together ([motif metric interpretation](../references/interpretation.md#motif-metric-interpretation)).
 Inspect a small bounded TSV in full or use header-based filters for a large table, and never cite a row id or motif residue without printing its row ([TSV query patterns](../references/interpretation.md#tsv-query-patterns)).
+Key the distance tables to any other table on `dbIndex` rather than on the display `database` id, because per-database rates differ enough that a mismatched join would merge unlike populations ([common fields](../references/interpretation.md#common-fields)).
 
 ## Conditional branches
 
